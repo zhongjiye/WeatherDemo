@@ -1,0 +1,48 @@
+<resources>
+    <string name="app_name">天气模仿</string>
+    <string name="level_1">健康</string>
+    <string name="level_2">优</string>
+    <string name="level_3">良</string>
+    <string name="level_4">轻度</string>
+    <string name="level_5">中度</string>
+    <string name="level_6">重度</string>
+    <string name="level_7">严重</string>
+
+    <string name="level_desc1">空气很好,万物皆宜</string>
+    <string name="level_desc2">空气不错,可以放心外出哦</string>
+    <string name="level_desc3">空气还可以哦,各种运动皆可以</string>
+    <string name="level_desc4">空很气一般般,不适合剧烈运动</string>
+    <string name="level_desc5">空气不太好,请注意健康</string>
+    <string name="level_desc6">空气很糟糕,不建议外出</string>
+    <string name="level_desc7">空气中毒了</string>
+
+    <string name="unknown">未知</string>
+    <string name="air">空气</string>
+    <string name="my_focus_city">我关注的城市</string>
+    <string name="edit_city">编辑城市</string>
+    <string name="add_city">添加城市</string>
+    <string name="cancel_update">取消修改</string>
+    <string name="confirm_update">确定修改</string>
+    <string name="exit_app">退出应用</string>
+    <string name="about_weather">关于天气</string>
+    <string name="message_board">留言板</string>
+    <string name="index">指数:</string>
+    <string name="level">级</string>
+    <string name="current">当前:</string>
+    <string name="air_pressure">气压</string>
+    <string name="air_pressure_unit">pHa</string>
+    <string name="today_live_index">今天生活指数</string>
+    <string name="ultraviolet_rays">紫外线:</string>
+    <string name="sunup">日出:</string>
+    <string name="sunset">日落:</string>
+    <string name="humidity">湿度:</string>
+
+    <string name="pull_to_refresh_pull_label">下拉刷新…</string>
+    <string name="pull_to_refresh_release_label">放开刷新…</string>
+    <string name="pull_to_refresh_refreshing_label">正在刷新…</string>
+
+    <string name="pull_to_refresh_from_bottom_pull_label">上拉加载更多…</string>
+    <string name="pull_to_refresh_from_bottom_refreshing_label">松开加载更多…</string>
+    <string name="pull_to_refresh_from_bottom_release_label">正在加载中…</string>
+
+</resources>

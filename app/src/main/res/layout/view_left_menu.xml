@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="280dp"
+    android:layout_height="match_parent"
+    android:background="@color/colorLeftMenu"
+    android:orientation="vertical">
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="65dp"
+        android:background="@color/colorLeftMenuItem" />
+
+    <include layout="@layout/view_line_black" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:background="@color/colorLeftMenuItem"
+        android:gravity="center_vertical"
+        android:paddingLeft="10dp"
+        android:text="@string/my_focus_city"
+        android:textColor="@color/colorLeftMenuText"
+        android:textSize="18sp" />
+
+    <include layout="@layout/view_line_black" />
+
+
+    <LinearLayout
+        android:id="@+id/ll_edit_city"
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        android:background="@color/colorLeftMenuItem"
+        android:gravity="center">
+
+        <TextView
+            android:id="@+id/tv_edit_city"
+            android:layout_width="100dp"
+            android:layout_height="30dp"
+            android:background="@drawable/button_bg"
+            android:gravity="center"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
+            android:text="@string/edit_city"
+            android:textColor="@android:color/white"
+            android:textSize="16sp" />
+
+        <LinearLayout
+            android:layout_width="100dp"
+            android:layout_height="30dp"
+            android:layout_marginLeft="20dp"
+            android:background="@drawable/button_bg"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="15dp"
+                android:layout_height="15dp"
+                android:layout_marginLeft="5dp"
+                android:src="@mipmap/add_city_white" />
+
+            <TextView
+                android:id="@+id/tv_add_city"
+                android:layout_width="wrap_content"
+                android:layout_height="35dp"
+                android:layout_marginRight="5dp"
+                android:gravity="center"
+                android:text="@string/add_city"
+                android:textColor="@android:color/white"
+                android:textSize="16sp" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_update"
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        android:background="@color/colorLeftMenuItem"
+        android:gravity="center"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/tv_cancel_update"
+            android:layout_width="100dp"
+            android:layout_height="30dp"
+            android:background="@drawable/button_bg"
+            android:gravity="center"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:text="@string/cancel_update"
+            android:textColor="@android:color/white"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/tv_confirm_update"
+            android:layout_width="100dp"
+            android:layout_height="30dp"
+            android:layout_marginLeft="20dp"
+            android:background="@drawable/button_bg"
+            android:gravity="center"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:text="@string/confirm_update"
+            android:textColor="@android:color/white"
+            android:textSize="16sp" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_marginTop="20dp"
+        android:background="@color/colorLeftMenuItem"
+        android:gravity="center">
+
+        <TextView
+            android:id="@+id/tv_message_board"
+            android:layout_width="60dp"
+            android:layout_height="30dp"
+            android:background="@drawable/button_bg"
+            android:gravity="center"
+            android:text="@string/message_board"
+            android:textColor="@android:color/white"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/tv_about_weather"
+            android:layout_width="75dp"
+            android:layout_height="30dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:background="@drawable/button_bg"
+            android:gravity="center"
+            android:text="@string/about_weather"
+            android:textColor="@android:color/white"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/tv_exit_app"
+            android:layout_width="75dp"
+            android:layout_height="30dp"
+            android:background="@drawable/button_bg"
+            android:gravity="center"
+            android:text="@string/exit_app"
+            android:textColor="@android:color/white"
+            android:textSize="16sp" />
+
+    </LinearLayout>
+
+</LinearLayout>
