@@ -8,4 +8,10 @@
     <color name="colorLeftMenuItem">#333333</color>
     <color name="colorLeftMenuText">#999999</color>
     <color name="colorUpdateTime">#B5D9ED</color>
+    <color name="colorAirLevel1">#8AD00E</color>
+    <color name="colorAirLevel2">#FFC410</color>
+    <color name="colorAirLevel3">#FFA000</color>
+    <color name="colorAirLevel4">#F4623C</color>
+    <color name="colorAirLevel5">#D52795</color>
+    <color name="colorAirLevel6">#A0117F</color>
 </resources>

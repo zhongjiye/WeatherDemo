@@ -96,7 +96,8 @@ public class AirFragment extends Fragment {
      */
     private void initDaysAirData() {
         ArrayList<DaysAir> airs = new ArrayList<>();
-        for (int i = 0, clock = 14, j = 150; i < 48; i++, clock++, j = j + (i % 2 == 0 ? 10 : -10)) {
+        for (int i = 0, clock = 14, j = 350; i < 48; i++, clock++, j = j + (i % 2 == 0 ? 20 :
+            -30)) {
             airs.add(new DaysAir(clock % 24, j));
         }
         myAirDaysLine.setData(airs);
@@ -107,7 +108,7 @@ public class AirFragment extends Fragment {
      */
     private void initMonthAirData() {
         ArrayList<MonthAir> monthAirs = new ArrayList<>();
-        for (int i = 0, j = 100; i < 15; i++, j = j + (i % 2 == 0 ? 20 : -20)) {
+        for (int i = 0, j = 400; i < 15; i++, j = j + (i % 2 == 0 ? 20 : -45)) {
             monthAirs.add(new MonthAir(DateUtil.getSomeDay(new Date(), i), j));
         }
         myAirMonthLine.setData(monthAirs);

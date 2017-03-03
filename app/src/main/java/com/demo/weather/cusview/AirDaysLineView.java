@@ -161,8 +161,6 @@ public class AirDaysLineView extends View {
 
     /**
      * 绘制X轴
-     *
-     * @param canvas
      */
     private void drawAxis(Canvas canvas) {
         canvas.drawLine(0, xAxisY, count * degree, xAxisY, linePaint);//最上方分割线
@@ -172,8 +170,6 @@ public class AirDaysLineView extends View {
 
     /**
      * 绘制平行于X轴的分割线
-     *
-     * @param canvas
      */
     private void drawSplitLine(Canvas canvas) {
         linePaint.setAlpha(55);
@@ -185,8 +181,6 @@ public class AirDaysLineView extends View {
 
     /**
      * 绘制刻度
-     *
-     * @param canvas
      */
     private void drawDegreeLine(Canvas canvas) {
         for (int i = 1; i < count; i++) {
@@ -197,8 +191,6 @@ public class AirDaysLineView extends View {
 
     /**
      * 绘制刻度文字表述
-     *
-     * @param canvas
      */
     private void drawDegreeText(Canvas canvas) {
         String lastDay = DateUtil.getDate(new Date(), "MM月dd日");
@@ -211,7 +203,7 @@ public class AirDaysLineView extends View {
                 if (datas.get(i).getClock() == 0) {
                     day++;
                     canvas.drawText(DateUtil.getSomeDay(new Date(), day, "MM月dd日"), (i + 1) * degree, paddingTop -
-                            15, degreeTextPaint);
+                        15, degreeTextPaint);
                 }
                 canvas.drawText(datas.get(i).getClock() + ":00", (i + 1) * degree, xAxisY + 40, degreeTextPaint);
             }
@@ -224,12 +216,12 @@ public class AirDaysLineView extends View {
         }
         for (int i = 0; i < points.size() - 1; i++) {
             midPoints.add(new Point((points.get(i).x + points.get(i + 1).x) / 2, (points.get(i).y + points.get(i + 1)
-                    .y) / 2));
+                .y) / 2));
         }
 
         for (int i = 0; i < midPoints.size() - 1; i++) {
             midMidPoints.add(new Point((midPoints.get(i).x + midPoints.get(i + 1).x) / 2, (midPoints.get(i).y +
-                    midPoints.get(i + 1).y) / 2));
+                midPoints.get(i + 1).y) / 2));
 
         }
 
@@ -251,14 +243,12 @@ public class AirDaysLineView extends View {
 
     private LinearGradient getLinearGradient() {
         return new LinearGradient(points.get(0).x, points.get(0).y, points.get(points.size() - 1).x, points.get
-                (points.size() - 1).y, startColor, endColor, Shader.TileMode.CLAMP);
+            (points.size() - 1).y, startColor, endColor, Shader.TileMode.CLAMP);
     }
 
 
     /**
      * 绘制两点之间的贝塞尔曲线
-     *
-     * @param canvas
      */
     private void drawBezier(Canvas canvas) {
         brokeLinePaint.setShader(getLinearGradient());
@@ -270,11 +260,11 @@ public class AirDaysLineView extends View {
             if (i == 0) {// 第一条为二阶贝塞尔
                 path.moveTo(points.get(i).x, points.get(i).y);// 起点
                 path.quadTo(controlPoints.get(i).x, controlPoints.get(i).y,// 控制点
-                        points.get(i + 1).x, points.get(i + 1).y);
+                    points.get(i + 1).x, points.get(i + 1).y);
             } else if (i < points.size() - 2) {// 三阶贝塞尔
                 path.cubicTo(controlPoints.get(2 * i - 1).x, controlPoints.get(2 * i - 1).y,// 控制点
-                        controlPoints.get(2 * i).x, controlPoints.get(2 * i).y,// 控制点
-                        points.get(i + 1).x, points.get(i + 1).y);// 终点
+                    controlPoints.get(2 * i).x, controlPoints.get(2 * i).y,// 控制点
+                    points.get(i + 1).x, points.get(i + 1).y);// 终点
             }
         }
         canvas.drawPath(path, brokeLinePaint);
@@ -284,12 +274,12 @@ public class AirDaysLineView extends View {
         for (int i = middle; i < points.size(); i++) {
             if (i < points.size() - 2) {// 三阶贝塞尔
                 path.cubicTo(controlPoints.get(2 * i - 1).x, controlPoints.get(2 * i - 1).y,// 控制点
-                        controlPoints.get(2 * i).x, controlPoints.get(2 * i).y,// 控制点
-                        points.get(i + 1).x, points.get(i + 1).y);// 终点
+                    controlPoints.get(2 * i).x, controlPoints.get(2 * i).y,// 控制点
+                    points.get(i + 1).x, points.get(i + 1).y);// 终点
             } else if (i == points.size() - 2) {// 最后一条为二阶贝塞尔
                 path.moveTo(points.get(i).x, points.get(i).y);// 起点
                 path.quadTo(controlPoints.get(controlPoints.size() - 1).x, controlPoints.get(controlPoints.size() -
-                        1).y, points.get(i + 1).x, points.get(i + 1).y);// 终点
+                    1).y, points.get(i + 1).x, points.get(i + 1).y);// 终点
             }
         }
         canvas.drawPath(path, brokeLinePaint);
@@ -298,22 +288,12 @@ public class AirDaysLineView extends View {
 
     /**
      * 绘制数据点
-     *
-     * @param canvas
      */
     private void drawPoint(Canvas canvas) {
         path.reset();
+        brokeLinePaint.setStyle(Paint.Style.FILL);
         for (int i = 0; i < points.size(); i++) {
-            if (i == 0) {
-                brokeLinePaint.setStyle(Paint.Style.FILL);
-                canvas.drawCircle(points.get(i).x, points.get(i).y, 10, brokeLinePaint);//实心圆点
-
-                brokeLinePaint.setAlpha(100);
-                canvas.drawCircle(points.get(i).x, points.get(i).y, 20, brokeLinePaint);//大实心圆点
-                brokeLinePaint.setAlpha(255);
-            } else {
-                canvas.drawCircle(points.get(i).x, points.get(i).y, 10, brokeLinePaint);//实心圆点
-            }
+            canvas.drawCircle(points.get(i).x, points.get(i).y, 10, brokeLinePaint);//实心圆点
         }
     }
 
@@ -335,7 +315,7 @@ public class AirDaysLineView extends View {
                 nums[1] = datas.get(datas.size() - 1).getAirNum();
             } else {//根据斜率计算相应点的坐标
                 float x1 = count * degree, y1 = xAxisY - datas.get(count).getAirNum() * perDegree, x2 = x1 + degree,
-                        y2 = xAxisY - datas.get(count + 1).getAirNum() * perDegree;
+                    y2 = xAxisY - datas.get(count + 1).getAirNum() * perDegree;
                 float xieLv = (y2 - y1) / (x2 - x1);
                 nums[0] = (int) (xieLv * (x - x1) + y1);
                 nums[1] = (int) ((xAxisY - nums[0]) / perDegree);
