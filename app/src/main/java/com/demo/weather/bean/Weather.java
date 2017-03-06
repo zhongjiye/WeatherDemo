@@ -44,6 +44,9 @@ public class Weather implements Cloneable, Parcelable {
     private String sunset;
     private String ultraviolet;
 
+    public Weather() {
+    }
+
     public Weather(String weatherDesc, String weatherCode, int temperatureMin, int temperatureMax, int currentTemp, String currentWeatherDesc, int windLevel, String windDesc, int airPressure, int airNum, String date, int humidity, String sunup, String sunset, String ultraviolet) {
         this.weatherDesc = weatherDesc;
         this.weatherCode = weatherCode;

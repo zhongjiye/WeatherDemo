@@ -10,9 +10,11 @@ import android.graphics.Point;
 import android.graphics.Shader;
 import android.util.AttributeSet;
 import android.view.View;
+import android.widget.LinearLayout;
 
 import com.demo.weather.R;
 import com.demo.weather.bean.DaysAir;
+import com.demo.weather.util.ColorEvaluator;
 import com.demo.weather.util.DateUtil;
 
 import java.util.ArrayList;
@@ -242,8 +244,22 @@ public class AirDaysLineView extends View {
     }
 
     private LinearGradient getLinearGradient() {
+        int sc = ColorEvaluator.evaluate(datas.get(0).getAirNum() / (float) 500,
+            "#8AD00E", "#FF0000");
+        int ec = ColorEvaluator.evaluate(datas.get(datas.size() - 1).getAirNum() / (float) 500,
+            "#8AD00E", "#FF0000");
         return new LinearGradient(points.get(0).x, points.get(0).y, points.get(points.size() - 1).x, points.get
-            (points.size() - 1).y, startColor, endColor, Shader.TileMode.CLAMP);
+            (points.size() - 1).y, sc, ec, Shader.TileMode.CLAMP);
+    }
+
+    private LinearGradient getLinearGradient(int index) {
+        int sc = ColorEvaluator.evaluate(datas.get(index).getAirNum() / (float) 500,
+            "#8AD00E", "#FF0000");
+        int ec = ColorEvaluator.evaluate(datas.get(index + 1).getAirNum() / (float) 500,
+            "#8AD00E", "#FF0000");
+        return new LinearGradient(points.get(index).x, points.get(index).y, points.get(index + 1).x,
+            points.get
+                (index + 1).y, sc, ec, Shader.TileMode.CLAMP);
     }
 
 
@@ -252,38 +268,28 @@ public class AirDaysLineView extends View {
      */
     private void drawBezier(Canvas canvas) {
         brokeLinePaint.setShader(getLinearGradient());
-        brokeLinePaint.setStyle(Paint.Style.STROKE);
         brokeLinePaint.setStrokeWidth(2);
-        path.reset();
-        int middle = points.size() / 2;
-        for (int i = 0; i < middle; i++) {
+        brokeLinePaint.setStyle(Paint.Style.STROKE);
+        for (int i = 0; i < points.size(); i++) {
+            path.reset();
             if (i == 0) {// 第一条为二阶贝塞尔
                 path.moveTo(points.get(i).x, points.get(i).y);// 起点
                 path.quadTo(controlPoints.get(i).x, controlPoints.get(i).y,// 控制点
                     points.get(i + 1).x, points.get(i + 1).y);
+                canvas.drawPath(path, brokeLinePaint);
             } else if (i < points.size() - 2) {// 三阶贝塞尔
+                path.moveTo(points.get(i).x, points.get(i).y);
                 path.cubicTo(controlPoints.get(2 * i - 1).x, controlPoints.get(2 * i - 1).y,// 控制点
                     controlPoints.get(2 * i).x, controlPoints.get(2 * i).y,// 控制点
                     points.get(i + 1).x, points.get(i + 1).y);// 终点
-            }
-        }
-        canvas.drawPath(path, brokeLinePaint);
-
-        path.reset();
-        path.moveTo(points.get(middle).x, points.get(middle).y);// 起点
-        for (int i = middle; i < points.size(); i++) {
-            if (i < points.size() - 2) {// 三阶贝塞尔
-                path.cubicTo(controlPoints.get(2 * i - 1).x, controlPoints.get(2 * i - 1).y,// 控制点
-                    controlPoints.get(2 * i).x, controlPoints.get(2 * i).y,// 控制点
-                    points.get(i + 1).x, points.get(i + 1).y);// 终点
+                canvas.drawPath(path, brokeLinePaint);
             } else if (i == points.size() - 2) {// 最后一条为二阶贝塞尔
                 path.moveTo(points.get(i).x, points.get(i).y);// 起点
                 path.quadTo(controlPoints.get(controlPoints.size() - 1).x, controlPoints.get(controlPoints.size() -
                     1).y, points.get(i + 1).x, points.get(i + 1).y);// 终点
+                canvas.drawPath(path, brokeLinePaint);
             }
         }
-        canvas.drawPath(path, brokeLinePaint);
-
     }
 
     /**

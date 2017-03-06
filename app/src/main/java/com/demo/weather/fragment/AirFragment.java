@@ -1,19 +1,24 @@
 package com.demo.weather.fragment;
 
-import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
-
 import com.demo.weather.R;
 import com.demo.weather.bean.DaysAir;
 import com.demo.weather.bean.MonthAir;
 import com.demo.weather.cusview.BoardMoceView;
 import com.demo.weather.cusview.MyAirDaysLineView;
 import com.demo.weather.cusview.MyAirMonthLineView;
+import com.demo.weather.cusview.MyScrollView;
 import com.demo.weather.util.DateUtil;
+
+import android.graphics.Color;
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -61,6 +66,16 @@ public class AirFragment extends Fragment {
     MyAirDaysLineView myAirDaysLine;
     @InjectView(R.id.my_air_month_line)
     MyAirMonthLineView myAirMonthLine;
+    @InjectView(R.id.iv_bg)
+    ImageView mIvBg;
+    @InjectView(R.id.ms_scroll)
+    MyScrollView mMsScroll;
+    @InjectView(R.id.ll_header)
+    LinearLayout mLlHeader;
+    @InjectView(R.id.iv_arrow)
+    ImageView mIvArrow;
+    @InjectView(R.id.activity_main)
+    RelativeLayout mActivityMain;
 
 
     private Random random;
@@ -84,6 +99,9 @@ public class AirFragment extends Fragment {
     }
 
     private void init() {
+        mLlHeader.setBackgroundColor(Color.argb((int) (255 * 0.5f), 37, 97, 118));
+        mMsScroll.setBackgroundColor(Color.argb((int) (255 * 0.5f), 37, 97, 118));
+        mMsScroll.setHeader(mLlHeader);
         random = new Random();
         boardView.setData(193);
         initDaysAirData();
@@ -117,10 +135,8 @@ public class AirFragment extends Fragment {
     /**
      * 获取介于min和max之间的随机整数
      *
-     * @param random
-     * @param min    范围最小值
-     * @param max    范围最大数值
-     * @return
+     * @param min 范围最小值
+     * @param max 范围最大数值
      */
     private int getRandom(Random random, int min, int max) {
         return random.nextInt(max) % (max - min + 1) + min;

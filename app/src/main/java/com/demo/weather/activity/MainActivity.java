@@ -1,50 +1,61 @@
 package com.demo.weather.activity;
 
-import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v4.widget.DrawerLayout;
-import android.util.Log;
-import android.view.Gravity;
-import android.view.View;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
-
+import com.alibaba.fastjson.JSON;
 import com.amap.api.location.AMapLocation;
 import com.amap.api.location.AMapLocationListener;
 import com.demo.weather.R;
+import com.demo.weather.adapter.WeatherCityAdapter;
 import com.demo.weather.base.BaseFragmentActivity;
 import com.demo.weather.bean.Weather;
+import com.demo.weather.bean.WeatherCity;
 import com.demo.weather.fragment.AirFragment;
 import com.demo.weather.fragment.SettingFragment;
 import com.demo.weather.fragment.TodayFragment;
 import com.demo.weather.fragment.WeatherDetailFragment;
 import com.demo.weather.fragment.WeatherFragment;
 import com.demo.weather.util.AppManager;
+import com.demo.weather.util.SharedPreferencesUtils;
+import com.demo.weather.util.WeatherUtil;
+import com.joanzapata.android.BaseAdapterHelper;
+import com.joanzapata.android.QuickAdapter;
+
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v4.widget.DrawerLayout;
+import android.text.TextUtils;
+import android.util.Log;
+import android.view.Gravity;
+import android.view.MotionEvent;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
 
+import static com.demo.weather.activity.LaunchActivity.WEATHER_CITY_LIST_TAG;
 import static com.demo.weather.bean.WeatherDateType.TODAY;
 import static com.demo.weather.bean.WeatherDateType.TOMORROW;
+import static com.demo.weather.config.BroadCastReceiverConfig.UPDATE_CITYLIST;
 
 /**
  * 主界面
  */
 public class MainActivity extends BaseFragmentActivity implements WeatherFragment.WeatherMessage,
-    WeatherDetailFragment.UpdateWeather, AMapLocationListener {
-
-
-    public static final String WEATHER_TAG = "weatherFragment";
-    public static final String TODAY_TAG = "todayFragment";
-    public static final String TOMORROW_TAG = "tomorrowFragment";
-    public static final String AIR_TAG = "airFragment";
-    public static final String SETTING_TAG = "settingFragment";
+    WeatherDetailFragment.UpdateWeather, AMapLocationListener, AdapterView.OnItemClickListener, WeatherCityAdapter.DeleteItemListener {
 
     @InjectView(R.id.ib_weather)
     ImageView ibWeather;
@@ -56,8 +67,6 @@ public class MainActivity extends BaseFragmentActivity implements WeatherFragmen
     ImageView ibAqi;
     @InjectView(R.id.ib_setting)
     ImageView ibSetting;
-
-
     @InjectView(R.id.tv_edit_city)
     TextView tvEditCity;
     @InjectView(R.id.tv_add_city)
@@ -78,13 +87,28 @@ public class MainActivity extends BaseFragmentActivity implements WeatherFragmen
     TextView tvExitApp;
     @InjectView(R.id.drawer_layout)
     DrawerLayout drawerLayout;
+    @InjectView(R.id.lv_menu_list)
+    ListView mLvMenuList;
 
+    public static final String WEATHER_TAG = "weatherFragment";
+    public static final String TODAY_TAG = "todayFragment";
+    public static final String TOMORROW_TAG = "tomorrowFragment";
+    public static final String AIR_TAG = "airFragment";
+    public static final String SETTING_TAG = "settingFragment";
     public static AMapLocation location = null;
+
     private FragmentManager fragmentManager;
     private FragmentTransaction transaction;
     private Fragment weatherFragment, todayFragment, tomorrowFragment, airFragment, settingFragment;
 
     private ArrayList<Weather> weatherList;
+
+    private List<WeatherCity> weatherCityList;
+    private List<WeatherCity> weatherCitiyTemp;
+
+    private WeatherCityAdapter weatherCityAdapter;
+
+    private MyReceiver myReceiver;
 
     @Override
     public void updateTodayWeather(ArrayList list) {
@@ -105,6 +129,23 @@ public class MainActivity extends BaseFragmentActivity implements WeatherFragmen
      * 初始化
      */
     private void init() {
+        myReceiver = new MyReceiver();
+        registerReceiver(myReceiver, new IntentFilter(UPDATE_CITYLIST));
+
+        weatherCityList = new ArrayList<>();
+        weatherCityAdapter = new WeatherCityAdapter(this, weatherCityList, this);
+        mLvMenuList.setAdapter(weatherCityAdapter);
+        mLvMenuList.setOnItemClickListener(this);
+
+        String content = String.valueOf(SharedPreferencesUtils.get(getApplicationContext(),
+            WEATHER_CITY_LIST_TAG, ""));
+        if (!TextUtils.isEmpty(content)) {
+            List<WeatherCity> list = JSON.parseArray(content, WeatherCity.class);
+            if (list != null && list.size() != 0) {
+                weatherCityList.addAll(list);
+                weatherCityAdapter.notifyDataSetChanged();
+            }
+        }
         fragmentManager = getSupportFragmentManager();
         setSelectTab(0);
     }
@@ -141,16 +182,16 @@ public class MainActivity extends BaseFragmentActivity implements WeatherFragmen
                 setSelectTab(4);
                 break;
             case R.id.tv_edit_city:
-                llEditCity.setVisibility(View.GONE);
-                llUpdate.setVisibility(View.VISIBLE);
+                updateCity();
                 break;
             case R.id.tv_add_city:
+                startActivity(new Intent(this, AddCityActivity.class));
                 break;
             case R.id.tv_cancel_update:
-                llEditCity.setVisibility(View.VISIBLE);
-                llUpdate.setVisibility(View.GONE);
+                cancelUpdate();
                 break;
             case R.id.tv_confirm_update:
+                confirmUpdate();
                 break;
             case R.id.tv_message_board:
                 break;
@@ -160,6 +201,80 @@ public class MainActivity extends BaseFragmentActivity implements WeatherFragmen
                 AppManager.getAppManager().AppExit();
                 break;
         }
+    }
+
+
+    /**
+     * 编辑城市
+     */
+    private void updateCity() {
+        weatherCitiyTemp = new ArrayList<>();
+        weatherCitiyTemp.addAll(weatherCityList);
+
+        weatherCityAdapter.setEditFlag(true);
+
+        weatherCityAdapter.notifyDataSetChanged();
+
+        llEditCity.setVisibility(View.GONE);
+        llUpdate.setVisibility(View.VISIBLE);
+    }
+
+    /**
+     * 确认修改
+     */
+    private void confirmUpdate() {
+        SharedPreferencesUtils.put(this, WEATHER_CITY_LIST_TAG, JSON.toJSONString(weatherCityList));
+
+        weatherCityAdapter.setEditFlag(false);
+        weatherCityAdapter.notifyDataSetChanged();
+
+        llEditCity.setVisibility(View.VISIBLE);
+        llUpdate.setVisibility(View.GONE);
+
+        sendBroadcast(new Intent(UPDATE_CITYLIST));
+
+        if (weatherCityAdapter.getCount() == 0) {
+            startActivity(new Intent(this, AddCityActivity.class));
+        }
+    }
+
+    /**
+     * 取消修改
+     */
+    private void cancelUpdate() {
+        weatherCityList.clear();
+        weatherCityList.addAll(weatherCitiyTemp);
+
+        weatherCityAdapter.setEditFlag(false);
+
+        weatherCityAdapter.notifyDataSetChanged();
+
+        llEditCity.setVisibility(View.VISIBLE);
+        llUpdate.setVisibility(View.GONE);
+    }
+
+
+    @Override
+    public void delete(int position) {
+//        if (position < weatherCityList.size()) {
+        weatherCityList.remove(position);
+        weatherCityAdapter.setEditFlag(true);
+        weatherCityAdapter.notifyDataSetChanged();
+//        }
+    }
+
+    @Override
+    public void setDefault(int position) {
+        for (int i = 0; i < weatherCityList.size(); i++) {
+            WeatherCity temp = weatherCityList.get(i);
+            if (i == position) {
+                temp.setDefault(true);
+            } else {
+                temp.setDefault(false);
+            }
+            weatherCityList.set(i, temp);
+        }
+        weatherCityAdapter.notifyDataSetChanged();
     }
 
     /**
@@ -259,4 +374,37 @@ public class MainActivity extends BaseFragmentActivity implements WeatherFragmen
     }
 
 
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        if (weatherFragment != null) {
+            ((WeatherFragment) weatherFragment).selectPage(position);
+            drawerLayout.closeDrawers();
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(myReceiver);
+    }
+
+    class MyReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            switch (intent.getAction()) {
+                case UPDATE_CITYLIST:
+                    String content = String.valueOf(SharedPreferencesUtils.get(getApplicationContext(),
+                        WEATHER_CITY_LIST_TAG, ""));
+                    if (!TextUtils.isEmpty(content)) {
+                        List<WeatherCity> list = JSON.parseArray(content, WeatherCity.class);
+                        if (list != null && list.size() != 0) {
+                            weatherCityList.clear();
+                            weatherCityList.addAll(list);
+                            weatherCityAdapter.notifyDataSetChanged();
+                        }
+                    }
+                    break;
+            }
+        }
+    }
 }

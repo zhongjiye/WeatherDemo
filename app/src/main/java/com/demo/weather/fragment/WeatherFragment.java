@@ -1,11 +1,25 @@
 package com.demo.weather.fragment;
 
+import com.alibaba.fastjson.JSON;
+import com.demo.weather.R;
+import com.demo.weather.activity.MainActivity;
+import com.demo.weather.adapter.ViewPagerAdapter;
+import com.demo.weather.bean.WeatherCity;
+import com.demo.weather.util.SharedPreferencesUtils;
+
+import net.lucode.hackware.magicindicator.MagicIndicator;
+import net.lucode.hackware.magicindicator.ViewPagerHelper;
+import net.lucode.hackware.magicindicator.buildins.circlenavigator.CircleNavigator;
+
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
-import android.support.v4.widget.DrawerLayout;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,19 +27,15 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.demo.weather.R;
-import com.demo.weather.activity.MainActivity;
-import com.demo.weather.adapter.ViewPagerAdapter;
-
-import net.lucode.hackware.magicindicator.MagicIndicator;
-import net.lucode.hackware.magicindicator.ViewPagerHelper;
-import net.lucode.hackware.magicindicator.buildins.circlenavigator.CircleNavigator;
-
 import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
+
+import static com.demo.weather.activity.LaunchActivity.WEATHER_CITY_LIST_TAG;
+import static com.demo.weather.config.BroadCastReceiverConfig.UPDATE_CITYLIST;
 
 /**
  * 天气主界面
@@ -34,6 +44,36 @@ public class WeatherFragment extends Fragment implements WeatherDetailFragment
     .WeatherDetailMessage, ViewPager
     .OnPageChangeListener {
 
+    @InjectView(R.id.vp_main)
+    ViewPager mVpMain;
+    @InjectView(R.id.iv_toggle)
+    ImageView mIvToggle;
+    @InjectView(R.id.iv_add_city)
+    ImageView mIvAddCity;
+    @InjectView(R.id.iv_search_city)
+    ImageView mIvSearchCity;
+    @InjectView(R.id.iv_center_locate)
+    ImageView mIvCenterLocate;
+    @InjectView(R.id.tv_center_location_district)
+    TextView mTvCenterLocationDistrict;
+    @InjectView(R.id.ll_center)
+    LinearLayout mLlCenter;
+    @InjectView(R.id.iv_left_locate)
+    ImageView mIvLeftLocate;
+    @InjectView(R.id.tv_left_location_district)
+    TextView mTvLeftLocationDistrict;
+    @InjectView(R.id.ll_left)
+    LinearLayout mLlLeft;
+    @InjectView(R.id.iv_right_locate)
+    ImageView mIvRightLocate;
+    @InjectView(R.id.tv_right_location_district)
+    TextView mTvRightLocationDistrict;
+    @InjectView(R.id.ll_right)
+    LinearLayout mLlRight;
+    @InjectView(R.id.ll_point)
+    LinearLayout mLlPoint;
+    @InjectView(R.id.magic_indicator)
+    MagicIndicator mMagicIndicator;
 
     public interface WeatherMessage {
         /**
@@ -42,65 +82,18 @@ public class WeatherFragment extends Fragment implements WeatherDetailFragment
         void toggleLeftMenu();
     }
 
-    @InjectView(R.id.iv_center_locate)
-    ImageView ivCenterLocate;
-    @InjectView(R.id.tv_center_location_district)
-    TextView tvCenterLocationDistrict;
-    @InjectView(R.id.ll_center)
-    LinearLayout llCenter;
-    @InjectView(R.id.iv_left_locate)
-    ImageView ivLeftLocate;
-    @InjectView(R.id.tv_left_location_district)
-    TextView tvLeftLocationDistrict;
-    @InjectView(R.id.ll_left)
-    LinearLayout llLeft;
-    @InjectView(R.id.iv_right_locate)
-    ImageView ivRightLocate;
-    @InjectView(R.id.tv_right_location_district)
-    TextView tvRightLocationDistrict;
-    @InjectView(R.id.ll_right)
-    LinearLayout llRight;
-    @InjectView(R.id.tv_edit_city)
-    TextView tvEditCity;
-    @InjectView(R.id.tv_add_city)
-    TextView tvAddCity;
-    @InjectView(R.id.ll_edit_city)
-    LinearLayout llEditCity;
-    @InjectView(R.id.tv_cancel_update)
-    TextView tvCancelUpdate;
-    @InjectView(R.id.tv_confirm_update)
-    TextView tvConfirmUpdate;
-    @InjectView(R.id.ll_update)
-    LinearLayout llUpdate;
-    @InjectView(R.id.tv_message_board)
-    TextView tvMessageBoard;
-    @InjectView(R.id.tv_about_weather)
-    TextView tvAboutWeather;
-    @InjectView(R.id.tv_exit_app)
-    TextView tvExitApp;
-    @InjectView(R.id.drawer_layout)
-    DrawerLayout drawerLayout;
-    @InjectView(R.id.vp_main)
-    ViewPager vpMain;
-    @InjectView(R.id.iv_toggle)
-    ImageView ivToggle;
-    @InjectView(R.id.iv_add_city)
-    ImageView ivAddCity;
-    @InjectView(R.id.iv_search_city)
-    ImageView ivSearchCity;
-    @InjectView(R.id.magic_indicator)
-    MagicIndicator magicIndicator;
 
     private int index;
     private ArrayList<WeatherDetailFragment> fragmentList;
 
-
-    private WeatherDetailFragment weather1, weather2, weather3, weather4;
     private ViewPagerAdapter adapter;
 
     private WeatherMessage weatherMessage;
+    private List<WeatherCity> weatherCityList;
 
     private int lastIndex = -1;
+
+    private MyReceiver myReceiver;
 
     public WeatherFragment() {
 
@@ -122,44 +115,54 @@ public class WeatherFragment extends Fragment implements WeatherDetailFragment
 
 
     private void init() {
-        weather1 = WeatherDetailFragment.newInstance(this, "浦东", true);
-        weather2 = WeatherDetailFragment.newInstance(this, "南京", false);
-        weather3 = WeatherDetailFragment.newInstance(this, "北京", false);
-        weather4 = WeatherDetailFragment.newInstance(this, "合肥", false);
+        myReceiver = new MyReceiver();
+        getContext().registerReceiver(myReceiver, new IntentFilter(UPDATE_CITYLIST));
+        weatherCityList = new ArrayList<>();
         fragmentList = new ArrayList<>();
-        fragmentList.add(weather1);
-        fragmentList.add(weather2);
-        fragmentList.add(weather3);
-        fragmentList.add(weather4);
+        String content = String.valueOf(SharedPreferencesUtils.get(getContext(),
+            WEATHER_CITY_LIST_TAG, ""));
+        if (!TextUtils.isEmpty(content)) {
+            List<WeatherCity> list = JSON.parseArray(content, WeatherCity.class);
+            if (list != null && list.size() != 0) {
+                weatherCityList.addAll(list);
+            }
+        }
+        for (WeatherCity temp : weatherCityList) {
+            fragmentList.add(WeatherDetailFragment.newInstance(this, temp.getCity(), temp.isLocate()));
+        }
+
         adapter = new ViewPagerAdapter(getChildFragmentManager(), fragmentList);
-        vpMain.setAdapter(adapter);
+        mVpMain.setAdapter(adapter);
+        mVpMain.addOnPageChangeListener(this);
+        mVpMain.setOffscreenPageLimit(2);
+
+        initGuide();
+
+    }
+
+    private void initGuide() {
+        CircleNavigator circleNavigator = new CircleNavigator(getContext());
+        circleNavigator.setCircleCount(fragmentList.size());
+        circleNavigator.setCircleColor(Color.WHITE);
+        mMagicIndicator.setNavigator(circleNavigator);
+        ViewPagerHelper.bind(mMagicIndicator, mVpMain);
+
+        adapter.notifyDataSetChanged();
 
         lastIndex = 0;
         if (fragmentList.size() == 1) {
             setData(1, 0);
-            llCenter.setVisibility(View.VISIBLE);
-            llLeft.setVisibility(View.INVISIBLE);
-            llRight.setVisibility(View.INVISIBLE);
+            mLlCenter.setVisibility(View.VISIBLE);
+            mLlLeft.setVisibility(View.INVISIBLE);
+            mLlRight.setVisibility(View.INVISIBLE);
         } else if (fragmentList.size() > 1) {
             setData(1, 0);
             setData(2, 1);
-            llLeft.setVisibility(View.INVISIBLE);
-            llCenter.setVisibility(View.VISIBLE);
-            llRight.setVisibility(View.VISIBLE);
+            mLlLeft.setVisibility(View.INVISIBLE);
+            mLlCenter.setVisibility(View.VISIBLE);
+            mLlRight.setVisibility(View.VISIBLE);
         }
-
-        vpMain.addOnPageChangeListener(this);
-        vpMain.setOffscreenPageLimit(2);
-
-        CircleNavigator circleNavigator = new CircleNavigator(getContext());
-        circleNavigator.setCircleCount(fragmentList.size());
-        circleNavigator.setCircleColor(Color.WHITE);
-        magicIndicator.setNavigator(circleNavigator);
-        ViewPagerHelper.bind(magicIndicator, vpMain);
-
-
     }
-
 
     @Override
     public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -177,42 +180,42 @@ public class WeatherFragment extends Fragment implements WeatherDetailFragment
             if (index - lastIndex > 0) {
                 setData(0, 0);
                 setData(1, 1);
-                llLeft.setVisibility(View.VISIBLE);
-                llRight.setVisibility(View.GONE);
+                mLlLeft.setVisibility(View.VISIBLE);
+                mLlRight.setVisibility(View.GONE);
             } else {
                 setData(1, 0);
                 setData(2, 1);
-                llRight.setVisibility(View.VISIBLE);
-                llLeft.setVisibility(View.GONE);
+                mLlRight.setVisibility(View.VISIBLE);
+                mLlLeft.setVisibility(View.GONE);
             }
         } else if (fragmentList.size() > 2) {
             if (index - lastIndex > 0) {
                 if (index != fragmentList.size() - 1) {
-                    llLeft.setVisibility(View.VISIBLE);
-                    llRight.setVisibility(View.VISIBLE);
-                    llCenter.setVisibility(View.VISIBLE);
+                    mLlLeft.setVisibility(View.VISIBLE);
+                    mLlRight.setVisibility(View.VISIBLE);
+                    mLlCenter.setVisibility(View.VISIBLE);
                     setData(0, index - 1);
                     setData(1, index);
                     setData(2, index + 1);
                 } else {
-                    llLeft.setVisibility(View.VISIBLE);
-                    llRight.setVisibility(View.INVISIBLE);
-                    llCenter.setVisibility(View.VISIBLE);
+                    mLlLeft.setVisibility(View.VISIBLE);
+                    mLlRight.setVisibility(View.INVISIBLE);
+                    mLlCenter.setVisibility(View.VISIBLE);
                     setData(0, index - 1);
                     setData(1, index);
                 }
             } else {
                 if (index != 0) {
-                    llLeft.setVisibility(View.VISIBLE);
-                    llRight.setVisibility(View.VISIBLE);
-                    llCenter.setVisibility(View.VISIBLE);
+                    mLlLeft.setVisibility(View.VISIBLE);
+                    mLlRight.setVisibility(View.VISIBLE);
+                    mLlCenter.setVisibility(View.VISIBLE);
                     setData(0, index - 1);
                     setData(1, index);
                     setData(2, index + 1);
                 } else {
-                    llLeft.setVisibility(View.INVISIBLE);
-                    llRight.setVisibility(View.VISIBLE);
-                    llCenter.setVisibility(View.VISIBLE);
+                    mLlLeft.setVisibility(View.INVISIBLE);
+                    mLlRight.setVisibility(View.VISIBLE);
+                    mLlCenter.setVisibility(View.VISIBLE);
                     setData(1, index);
                     setData(2, index + 1);
                 }
@@ -230,32 +233,35 @@ public class WeatherFragment extends Fragment implements WeatherDetailFragment
     private void setData(int tab, int index) {
         switch (tab) {
             case 0:
-                tvLeftLocationDistrict.setText(fragmentList.get(index).getLocation());
+                mTvLeftLocationDistrict.setText(fragmentList.get(index).getLocation());
                 if (fragmentList.get(index).getDefault()) {
-                    ivLeftLocate.setVisibility(View.VISIBLE);
+                    mIvLeftLocate.setVisibility(View.VISIBLE);
                 } else {
-                    ivLeftLocate.setVisibility(View.GONE);
+                    mIvLeftLocate.setVisibility(View.GONE);
                 }
                 break;
             case 1:
-                tvCenterLocationDistrict.setText(fragmentList.get(index).getLocation());
+                mTvCenterLocationDistrict.setText(fragmentList.get(index).getLocation());
                 if (fragmentList.get(index).getDefault()) {
-                    ivCenterLocate.setVisibility(View.VISIBLE);
+                    mIvCenterLocate.setVisibility(View.VISIBLE);
                 } else {
-                    ivCenterLocate.setVisibility(View.GONE);
+                    mIvCenterLocate.setVisibility(View.GONE);
                 }
                 break;
             case 2:
-                tvRightLocationDistrict.setText(fragmentList.get(index).getLocation());
+                mTvRightLocationDistrict.setText(fragmentList.get(index).getLocation());
                 if (fragmentList.get(index).getDefault()) {
-                    ivRightLocate.setVisibility(View.VISIBLE);
+                    mIvRightLocate.setVisibility(View.VISIBLE);
                 } else {
-                    ivRightLocate.setVisibility(View.GONE);
+                    mIvRightLocate.setVisibility(View.GONE);
                 }
                 break;
         }
     }
 
+    public void selectPage(int index) {
+        mVpMain.setCurrentItem(index);
+    }
 
     @Override
     public void onAttach(Context context) {
@@ -263,6 +269,12 @@ public class WeatherFragment extends Fragment implements WeatherDetailFragment
         if (getContext() instanceof WeatherMessage) {
             this.weatherMessage = (WeatherMessage) getContext();
         }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        getContext().unregisterReceiver(myReceiver);
     }
 
     @Override
@@ -294,6 +306,33 @@ public class WeatherFragment extends Fragment implements WeatherDetailFragment
                 break;
             case R.id.iv_search_city:
                 break;
+        }
+    }
+
+    class MyReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            switch (intent.getAction()) {
+                case UPDATE_CITYLIST:
+                    String content = String.valueOf(SharedPreferencesUtils.get(getContext(),
+                        WEATHER_CITY_LIST_TAG, ""));
+                    if (!TextUtils.isEmpty(content)) {
+                        List<WeatherCity> list = JSON.parseArray(content, WeatherCity.class);
+                        if (list != null && list.size() != 0) {
+                            weatherCityList.clear();
+                            weatherCityList.addAll(list);
+                            fragmentList.clear();
+                            for (WeatherCity temp : weatherCityList) {
+                                fragmentList.add(WeatherDetailFragment.newInstance
+                                    (WeatherFragment.this, temp
+                                        .getCity(), temp.isLocate()));
+                            }
+                            adapter.notifyDataSetChanged();
+                            initGuide();
+                        }
+                    }
+                    break;
+            }
         }
     }
 

@@ -47,6 +47,8 @@ public class ColorEvaluator {
         return Color.parseColor(currentColor);
     }
 
+
+
     /**
      * 根据fraction值来计算当前的颜色。
      */

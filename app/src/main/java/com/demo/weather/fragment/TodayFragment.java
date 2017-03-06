@@ -33,6 +33,9 @@ import java.util.ArrayList;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
+import static com.demo.weather.config.BroadCastReceiverConfig.UPDATE_LOCATION;
+import static com.demo.weather.config.BroadCastReceiverConfig.UPDATE_WEATHER;
+
 
 public class TodayFragment extends Fragment implements PullToRefreshBase.OnRefreshListener2 {
 
@@ -112,8 +115,7 @@ public class TodayFragment extends Fragment implements PullToRefreshBase.OnRefre
     @InjectView(R.id.ll_today)
     LinearLayout llToday;
 
-    public static final String UPDATE_WEATHER = "com.demo.weather.updateweather";
-    public static final String UPDATE_LOCATION = "com.demo.weather.updatelocation";
+
     private WeatherBroadcast weatherBroadcast;
 
     private long updatetime = 0;
@@ -325,20 +327,20 @@ public class TodayFragment extends Fragment implements PullToRefreshBase.OnRefre
         tvCaleddar.setText(LunarUtil.getLunarDate(weather.getDate()));
 
         if ("a10".equals(weather.getWeatherCode())//
-                || "a11".equals(weather.getWeatherCode())//
-                || "a12".equals(weather.getWeatherCode())//
-                || "a13".equals(weather.getWeatherCode())//
-                || "a14".equals(weather.getWeatherCode())//
-                || "a16".equals(weather.getWeatherCode())//
-                || "a37".equals(weather.getWeatherCode())//
-                || "a39".equals(weather.getWeatherCode())//
-                || "a40".equals(weather.getWeatherCode())//
-                || "a41".equals(weather.getWeatherCode())//
-                || "a42".equals(weather.getWeatherCode())//
-                || "a60".equals(weather.getWeatherCode())//
-                || "a61".equals(weather.getWeatherCode())//
-                || "a64".equals(weather.getWeatherCode())
-                ) {
+            || "a11".equals(weather.getWeatherCode())//
+            || "a12".equals(weather.getWeatherCode())//
+            || "a13".equals(weather.getWeatherCode())//
+            || "a14".equals(weather.getWeatherCode())//
+            || "a16".equals(weather.getWeatherCode())//
+            || "a37".equals(weather.getWeatherCode())//
+            || "a39".equals(weather.getWeatherCode())//
+            || "a40".equals(weather.getWeatherCode())//
+            || "a41".equals(weather.getWeatherCode())//
+            || "a42".equals(weather.getWeatherCode())//
+            || "a60".equals(weather.getWeatherCode())//
+            || "a61".equals(weather.getWeatherCode())//
+            || "a64".equals(weather.getWeatherCode())
+            ) {
             tvUmbrella.setText("需带伞");
         } else {
             tvUmbrella.setText("无需带伞");

@@ -33,6 +33,9 @@ import java.util.Random;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
+import static com.demo.weather.config.BroadCastReceiverConfig.UPDATE_LOCATION;
+import static com.demo.weather.config.BroadCastReceiverConfig.UPDATE_WEATHER;
+
 
 public class WeatherDetailFragment extends Fragment implements PullToRefreshBase
     .OnRefreshListener2, View.OnClickListener, AdapterView.OnItemClickListener, AMapLocationListener {
@@ -235,7 +238,7 @@ public class WeatherDetailFragment extends Fragment implements PullToRefreshBase
     private void getWeatherData() {
         weather = weatherList.get(0);
         Intent intent = new Intent();
-        intent.setAction(TodayFragment.UPDATE_WEATHER);
+        intent.setAction(UPDATE_WEATHER);
         intent.putParcelableArrayListExtra("weather", weatherList);
         getContext().sendBroadcast(intent);
         if (updateWeather != null) {
@@ -253,7 +256,7 @@ public class WeatherDetailFragment extends Fragment implements PullToRefreshBase
 //                tvLocationStreet.setText(aMapLocation.getStreet());
                 ((AMapLocationListener) getContext()).onLocationChanged(aMapLocation);
                 Intent intent = new Intent();
-                intent.setAction(TodayFragment.UPDATE_LOCATION);
+                intent.setAction(UPDATE_LOCATION);
                 intent.putExtra("district", aMapLocation.getDistrict());
                 intent.putExtra("street", aMapLocation.getStreet());
                 getContext().sendBroadcast(intent);
