@@ -45,11 +45,12 @@ public class MyScrollView extends ScrollView {
     @Override
     protected void onScrollChanged(int l, int t, int oldl, int oldt) {
         super.onScrollChanged(l, t, oldl, oldt);
-        float ratio = (float) t / (getMeasuredHeight() - 2 * DensityUtil.dip2px(mContext, 65));
-        float alpha = ratio * (255 * 0.5f) + 255 * 0.5f;
+        float ratio = (float) t / getMeasuredHeight();
+        int alpha = (int) (ratio * (255 * 0.5f) + 255 * 0.5f);
+        alpha = alpha > 255 ? 255 : alpha;
         if (mHeader != null) {
-            mHeader.setBackgroundColor(Color.argb((int) alpha, 37, 97, 118));
+            mHeader.setBackgroundColor(Color.argb(alpha, 37, 97, 118));
         }
-        setBackgroundColor(Color.argb((int) alpha, 37, 97, 118));
+        setBackgroundColor(Color.argb(alpha, 37, 97, 118));
     }
 }

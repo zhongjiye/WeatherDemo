@@ -467,10 +467,4 @@ public class TodayFragment extends Fragment implements PullToRefreshBase.OnRefre
         super.onDetach();
         getContext().unregisterReceiver(weatherBroadcast);
     }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        ButterKnife.reset(this);
-    }
 }

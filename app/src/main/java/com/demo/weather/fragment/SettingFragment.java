@@ -31,11 +31,4 @@ public class SettingFragment extends Fragment {
         ButterKnife.inject(this, view);
         return view;
     }
-
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        ButterKnife.reset(this);
-    }
 }

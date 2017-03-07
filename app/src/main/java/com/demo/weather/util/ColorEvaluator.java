@@ -2,6 +2,7 @@ package com.demo.weather.util;
 
 
 import android.graphics.Color;
+import android.util.Log;
 
 public class ColorEvaluator {
 

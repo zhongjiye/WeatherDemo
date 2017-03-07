@@ -9,6 +9,7 @@ import com.demo.weather.activity.MainActivity;
 import com.demo.weather.adapter.WeatherAdapter;
 import com.demo.weather.bean.Advert;
 import com.demo.weather.bean.Weather;
+import com.demo.weather.cusview.xlistview.XListView;
 import com.demo.weather.util.DateUtil;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
@@ -37,8 +38,7 @@ import static com.demo.weather.config.BroadCastReceiverConfig.UPDATE_LOCATION;
 import static com.demo.weather.config.BroadCastReceiverConfig.UPDATE_WEATHER;
 
 
-public class WeatherDetailFragment extends Fragment implements PullToRefreshBase
-    .OnRefreshListener2, View.OnClickListener, AdapterView.OnItemClickListener, AMapLocationListener {
+public class WeatherDetailFragment extends Fragment implements XListView.IXListViewListener, View.OnClickListener, AdapterView.OnItemClickListener, AMapLocationListener {
 
 
     public interface WeatherDetailMessage {
@@ -49,8 +49,9 @@ public class WeatherDetailFragment extends Fragment implements PullToRefreshBase
         void updateTodayWeather(ArrayList<Weather> list);
     }
 
-    @InjectView(R.id.ps_listview)
-    PullToRefreshListView mPsListview;
+
+    @InjectView(R.id.listview)
+    XListView mListview;
     private View rootView;
 
 
@@ -98,20 +99,18 @@ public class WeatherDetailFragment extends Fragment implements PullToRefreshBase
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
             switch (msg.what) {
-                case 0:
-                    mPsListview.setRefreshing();
-                    break;
                 case 1:
                     getWeatherListData();
                     getWeatherData();
                     setAdvert(0);
+                    mListview.stopRefresh();
+                    mListview.setPullLoadEnable(true);
                     weatherAdapter.notifyDataSetChanged();
-                    mPsListview.onRefreshComplete();
                     break;
                 case 2:
                     setAdvert(1);
+                    mListview.stopLoadMore();
                     weatherAdapter.notifyDataSetChanged();
-                    mPsListview.onRefreshComplete();
                     break;
             }
         }
@@ -138,8 +137,7 @@ public class WeatherDetailFragment extends Fragment implements PullToRefreshBase
             initDatas();
             initListView();
             locate();
-            handler.sendEmptyMessageDelayed(0, 500);
-            mPsListview.setShowIndicator(false);
+            mListview.autoRefresh();
         }
         ButterKnife.inject(this, rootView);
         return rootView;
@@ -158,28 +156,29 @@ public class WeatherDetailFragment extends Fragment implements PullToRefreshBase
         weatherDatas[4] = new Weather("小雪", "a13", -5, 4, 6, "小雪", 1, "东风", 1025, 200, "2017-02-23", 25, "06:35",
             "18:32", "较弱");
 
-        advertDatas[0] = new Advert("这是广告啦1", Arrays.asList("http://img2.3lian.com/2014/f2/37/d/40.jpg"), 0);
-        advertDatas[1] = new Advert("这是广告啦2", Arrays.asList("http://img2.3lian.com/2014/f2/37/d/40.jpg",
-            "http://img2" + ".3lian.com/2014/f2/37/d/39.jpg", "http://www.8kmm" + "" +
-                ".com/UploadFiles/2012/8/201208140920132659.jpg"), 1);
-        advertDatas[2] = new Advert("这是广告啦3", Arrays.asList("http://www.8kmm" + "" +
-            ".com/UploadFiles/2012/8/201208140920132659.jpg", "http://f.hiphotos.baidu" +
-            ".com/image/h%3D200/sign=1478eb74d5a20cf45990f9df460b4b0c/d058ccbf6c81800a5422e5fdb43533fa838b4779" +
-            ".jpg", "http://f.hiphotos.baidu.com/image/pic/item/09fa513d269759ee50f1971ab6fb43166c22dfba.jpg"), 1);
-        advertDatas[3] = new Advert("这是广告啦4", Arrays.asList("http://img2.3lian.com/2014/f2/37/d/40.jpg"), 0);
-        advertDatas[4] = new Advert("这是广告啦5", Arrays.asList("http://f.hiphotos.baidu" + "" +
-            ".com/image/pic/item/09fa513d269759ee50f1971ab6fb43166c22dfba.jpg"), 1);
+        advertDatas[0] = new Advert("这是广告啦1", Arrays.asList("http://www.qqw21.com/article/UploadPic/2012-8/201281184749117.jpg"), 0);
+        advertDatas[1] = new Advert("这是广告啦2", Arrays.asList(
+            "http://www.qqw21.com/article/UploadPic/2012-8/201281184749117.jpg",
+            "http://www.qqw21.com/article/UploadPic/2012-8/201281184749280.jpg",
+            "http://www.qqw21.com/article/UploadPic/2012-8/201281184749300.jpg"), 1);
+        advertDatas[2] = new Advert("这是广告啦3", Arrays.asList(
+            "http://www.qqw21.com/article/UploadPic/2012-8/201281184749280.jpg",
+            "http://www.qqw21.com/article/UploadPic/2012-8/201281184749300.jpg",
+            "http://www.qqw21.com/article/UploadPic/2012-8/201281184749117.jpg"), 1);
+        advertDatas[3] = new Advert("这是广告啦4", Arrays.asList("http://www.qqw21.com/article/UploadPic/2012-8/201281184749280.jpg"), 0);
+        advertDatas[4] = new Advert("这是广告啦5", Arrays.asList("http://www.qqw21.com/article/UploadPic/2012-8/201281184749117.jpg"), 1);
     }
 
 
     private void initListView() {
+        mListview.setPullLoadEnable(false);
+        mListview.setXListViewListener(this);
+        mListview.setOnItemClickListener(this);
+
         weatherList = new ArrayList<>();
         adList = new ArrayList<>();
         weatherAdapter = new WeatherAdapter(getContext(), weatherList, adList, this);
-        mPsListview.setAdapter(weatherAdapter);
-        mPsListview.setOnRefreshListener(this);
-        mPsListview.setMode(PullToRefreshBase.Mode.BOTH);
-        mPsListview.setOnItemClickListener(this);
+        mListview.setAdapter(weatherAdapter);
     }
 
     private void locate() {
@@ -267,12 +266,12 @@ public class WeatherDetailFragment extends Fragment implements PullToRefreshBase
     }
 
     @Override
-    public void onPullDownToRefresh(PullToRefreshBase refreshView) {
+    public void onRefresh() {
         handler.sendEmptyMessageDelayed(1, 1500);
     }
 
     @Override
-    public void onPullUpToRefresh(PullToRefreshBase refreshView) {
+    public void onLoadMore() {
         handler.sendEmptyMessageDelayed(2, 1500);
     }
 
@@ -317,6 +316,7 @@ public class WeatherDetailFragment extends Fragment implements PullToRefreshBase
         if (null != rootView) {
             ((ViewGroup) rootView.getParent()).removeView(rootView);
         }
+        ButterKnife.reset(this);
     }
 
 

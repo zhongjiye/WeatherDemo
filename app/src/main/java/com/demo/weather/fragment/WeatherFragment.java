@@ -2,6 +2,7 @@ package com.demo.weather.fragment;
 
 import com.alibaba.fastjson.JSON;
 import com.demo.weather.R;
+import com.demo.weather.activity.AddCityActivity;
 import com.demo.weather.activity.MainActivity;
 import com.demo.weather.adapter.ViewPagerAdapter;
 import com.demo.weather.bean.WeatherCity;
@@ -303,6 +304,7 @@ public class WeatherFragment extends Fragment implements WeatherDetailFragment
                 }
                 break;
             case R.id.iv_add_city:
+                startActivity(new Intent(getContext(), AddCityActivity.class));
                 break;
             case R.id.iv_search_city:
                 break;
@@ -335,6 +337,4 @@ public class WeatherFragment extends Fragment implements WeatherDetailFragment
             }
         }
     }
-
-
 }

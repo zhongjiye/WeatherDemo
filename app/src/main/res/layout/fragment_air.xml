@@ -574,6 +574,106 @@
                 android:scrollbars="none"
                 android:visibility="gone"/>
 
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="5dp"
+                android:background="#22FFFFFF"/>
+
+            <TextView
+                android:text="各监测站点实时数据"
+                android:textColor="@android:color/white"
+                android:textSize="16sp"
+                android:gravity="center_vertical"
+                android:layout_marginLeft="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="35dp"/>
+
+            <LinearLayout
+                android:layout_height="30dp"
+                android:layout_width="match_parent"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                >
+
+                <TextView
+                    android:layout_weight="1"
+                    android:text="监测站点"
+                    android:textColor="@android:color/white"
+                    android:textSize="14sp"
+                    android:gravity="center_vertical|left"
+                    android:paddingLeft="10dp"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"/>
+
+                <TextView
+                    android:layout_weight="1"
+                    android:text="空气质量指数"
+                    android:textColor="@android:color/white"
+                    android:textSize="14sp"
+                    android:gravity="center"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"/>
+
+                <TextView
+                    android:layout_weight="1"
+                    android:text="PM2.5指数"
+                    android:textColor="@android:color/white"
+                    android:textSize="14sp"
+                    android:paddingRight="10dp"
+                    android:gravity="center_vertical|right"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"/>
+            </LinearLayout>
+
+            <com.demo.weather.cusview.MyListView
+                android:id="@+id/lv_listview"
+                android:divider="@null"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:background="#77ffffff"/>
+
+            <LinearLayout
+                android:id="@+id/ll_spread"
+                android:gravity="center"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                >
+
+                <LinearLayout
+                    android:gravity="center_vertical"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:id="@+id/tv_apread"
+                        android:text="@string/spread"
+                        android:textColor="@android:color/white"
+                        android:textSize="14sp"
+                        android:layout_marginRight="10dp"
+                        android:gravity="center"
+                        android:layout_width="wrap_content"
+                        android:layout_height="35dp"/>
+
+                    <ImageView
+                        android:id="@+id/iv_apread"
+                        android:layout_height="wrap_content"
+                        android:layout_width="wrap_content"
+                        android:src="@mipmap/aqi_down"/>
+
+                </LinearLayout>
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:background="#77ffffff"
+                android:layout_marginBottom="50dp"/>
+
         </LinearLayout>
 
     </com.demo.weather.cusview.MyScrollView>

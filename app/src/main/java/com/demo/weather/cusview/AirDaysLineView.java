@@ -9,6 +9,7 @@ import android.graphics.Path;
 import android.graphics.Point;
 import android.graphics.Shader;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
 
@@ -35,8 +36,7 @@ public class AirDaysLineView extends View {
     private int xLength;
     private int xAxisY;
     private float perDegree;
-    private int startColor, endColor;
-    private Paint linePaint, degreeTextPaint, brokeLinePaint;
+    private Paint linePaint, degreeTextPaint;
     private Path path;
 
     /**
@@ -101,9 +101,6 @@ public class AirDaysLineView extends View {
         desCentreTexts[5] = context.getString(R.string.level_6);
         desCentreTexts[6] = context.getString(R.string.level_7);
 
-        startColor = Color.parseColor("#8AD00E");
-        endColor = Color.parseColor("#FF0000");
-
         path = new Path();
 
         linePaint = new Paint();
@@ -111,10 +108,6 @@ public class AirDaysLineView extends View {
         linePaint.setStrokeWidth(2);
         linePaint.setAntiAlias(true);
 
-        brokeLinePaint = new Paint();
-        brokeLinePaint.setColor(Color.WHITE);
-        brokeLinePaint.setStrokeWidth(5);
-        brokeLinePaint.setAntiAlias(true);
 
         degreeTextPaint = new Paint();
         degreeTextPaint.setColor(Color.WHITE);
@@ -155,10 +148,12 @@ public class AirDaysLineView extends View {
         drawAxis(canvas);
         drawSplitLine(canvas);
         drawDegreeLine(canvas);
-        initPoint();
-        drawBezier(canvas);
-        drawPoint(canvas);
-        drawDegreeText(canvas);
+        if (datas != null && datas.size() != 0) {
+            initPoint();
+            drawBezier(canvas);
+            drawPoint(canvas);
+            drawDegreeText(canvas);
+        }
     }
 
     /**
@@ -212,7 +207,14 @@ public class AirDaysLineView extends View {
         }
     }
 
+    /**
+     * 初始化数据坐标点和贝塞尔曲线的控制点
+     */
     private void initPoint() {
+        points.clear();
+        midPoints.clear();
+        midMidPoints.clear();
+        controlPoints.clear();
         for (int i = 0; i < datas.size(); i++) {
             points.add(new Point(degree * (i + 1), (int) (xAxisY - datas.get(i).getAirNum() * perDegree)));
         }
@@ -243,51 +245,28 @@ public class AirDaysLineView extends View {
         }
     }
 
-    private LinearGradient getLinearGradient() {
-        int sc = ColorEvaluator.evaluate(datas.get(0).getAirNum() / (float) 500,
-            "#8AD00E", "#FF0000");
-        int ec = ColorEvaluator.evaluate(datas.get(datas.size() - 1).getAirNum() / (float) 500,
-            "#8AD00E", "#FF0000");
-        return new LinearGradient(points.get(0).x, points.get(0).y, points.get(points.size() - 1).x, points.get
-            (points.size() - 1).y, sc, ec, Shader.TileMode.CLAMP);
-    }
-
-    private LinearGradient getLinearGradient(int index) {
-        int sc = ColorEvaluator.evaluate(datas.get(index).getAirNum() / (float) 500,
-            "#8AD00E", "#FF0000");
-        int ec = ColorEvaluator.evaluate(datas.get(index + 1).getAirNum() / (float) 500,
-            "#8AD00E", "#FF0000");
-        return new LinearGradient(points.get(index).x, points.get(index).y, points.get(index + 1).x,
-            points.get
-                (index + 1).y, sc, ec, Shader.TileMode.CLAMP);
-    }
-
-
     /**
      * 绘制两点之间的贝塞尔曲线
      */
     private void drawBezier(Canvas canvas) {
-        brokeLinePaint.setShader(getLinearGradient());
-        brokeLinePaint.setStrokeWidth(2);
-        brokeLinePaint.setStyle(Paint.Style.STROKE);
         for (int i = 0; i < points.size(); i++) {
             path.reset();
             if (i == 0) {// 第一条为二阶贝塞尔
                 path.moveTo(points.get(i).x, points.get(i).y);// 起点
                 path.quadTo(controlPoints.get(i).x, controlPoints.get(i).y,// 控制点
                     points.get(i + 1).x, points.get(i + 1).y);
-                canvas.drawPath(path, brokeLinePaint);
+                canvas.drawPath(path, getBrokeLinePaint(i));
             } else if (i < points.size() - 2) {// 三阶贝塞尔
                 path.moveTo(points.get(i).x, points.get(i).y);
                 path.cubicTo(controlPoints.get(2 * i - 1).x, controlPoints.get(2 * i - 1).y,// 控制点
                     controlPoints.get(2 * i).x, controlPoints.get(2 * i).y,// 控制点
                     points.get(i + 1).x, points.get(i + 1).y);// 终点
-                canvas.drawPath(path, brokeLinePaint);
+                canvas.drawPath(path, getBrokeLinePaint(i));
             } else if (i == points.size() - 2) {// 最后一条为二阶贝塞尔
                 path.moveTo(points.get(i).x, points.get(i).y);// 起点
                 path.quadTo(controlPoints.get(controlPoints.size() - 1).x, controlPoints.get(controlPoints.size() -
                     1).y, points.get(i + 1).x, points.get(i + 1).y);// 终点
-                canvas.drawPath(path, brokeLinePaint);
+                canvas.drawPath(path, getBrokeLinePaint(i));
             }
         }
     }
@@ -296,11 +275,43 @@ public class AirDaysLineView extends View {
      * 绘制数据点
      */
     private void drawPoint(Canvas canvas) {
-        path.reset();
-        brokeLinePaint.setStyle(Paint.Style.FILL);
         for (int i = 0; i < points.size(); i++) {
-            canvas.drawCircle(points.get(i).x, points.get(i).y, 10, brokeLinePaint);//实心圆点
+            canvas.drawCircle(points.get(i).x, points.get(i).y, 10, getPointPaint(i));//实心圆点
         }
+    }
+
+
+    private Paint getBrokeLinePaint(int index) {
+        Paint paint = new Paint();
+        paint.setStrokeWidth(2);
+        paint.setAntiAlias(true);
+        paint.setStyle(Paint.Style.STROKE);
+        paint.setShader(getLinearGradient(index));
+        return paint;
+    }
+
+    private Paint getPointPaint(int index) {
+        Paint paint = new Paint();
+        paint.setStrokeWidth(2);
+        paint.setAntiAlias(true);
+        paint.setStyle(Paint.Style.FILL);
+        paint.setColor(getCurrentColor(index));
+        return paint;
+    }
+
+    private LinearGradient getLinearGradient(int index) {
+        if (index < datas.size() - 1) {
+            return new LinearGradient(points.get(index).x, points.get(index).y,//渐变起始点坐标
+                points.get(index + 1).x, points.get(index + 1).y,//渐变终点坐标
+                getCurrentColor(index), getCurrentColor(index + 1),//渐变开始和结束颜色
+                Shader.TileMode.REPEAT);
+        }
+        return null;
+    }
+
+    private int getCurrentColor(int index) {
+        float fraction = datas.get(index).getAirNum() / (float) 500;
+        return ColorEvaluator.evaluate(fraction, "#8AD00E", "#FF0000");
     }
 
 
@@ -308,6 +319,9 @@ public class AirDaysLineView extends View {
         return degree;
     }
 
+    /**
+     * 根据X计算Y
+     */
     public int[] getTextHeight(int x) {
         int count = x / degree;
         int residue = x % degree;

@@ -169,10 +169,12 @@ public class AirMonthLineView extends View {
         drawSplitLine(canvas);
         drawDegreeLine(canvas);
         drawMonthDesText(canvas);
-        initPoint();
-        drawBezier(canvas);
-        drawPoint(canvas);
-        drawPointText(canvas);
+        if (datas != null && datas.size() != 0) {
+            initPoint();
+            drawBezier(canvas);
+            drawPoint(canvas);
+            drawPointText(canvas);
+        }
     }
 
 
@@ -227,6 +229,10 @@ public class AirMonthLineView extends View {
     }
 
     private void initPoint() {
+        points.clear();
+        midPoints.clear();
+        midMidPoints.clear();
+        controlPoints.clear();
         for (int i = 0; i < datas.size(); i++) {
             points.add(new Point(degree * (i + 1), (int) (xAxisY - datas.get(i).getAirNum() * perDegree)));
         }
@@ -263,19 +269,20 @@ public class AirMonthLineView extends View {
     private void drawPoint(Canvas canvas) {
         path.reset();
         for (int i = 0; i < points.size(); i++) {
+            Paint paint = getPointPaint(i);
             if (i == 0) {
                 path.moveTo(points.get(i).x, xAxisY);
                 path.lineTo(points.get(i).x, points.get(i).y);
                 canvas.drawPath(path, dashPaint);
 
-                brokeLinePaint.setStyle(Paint.Style.FILL);
-                canvas.drawCircle(points.get(i).x, points.get(i).y, 10, brokeLinePaint);//实心圆点
+                paint.setStyle(Paint.Style.FILL);
+                canvas.drawCircle(points.get(i).x, points.get(i).y, 10, paint);//实心圆点
 
-                brokeLinePaint.setAlpha(100);
-                canvas.drawCircle(points.get(i).x, points.get(i).y, 20, brokeLinePaint);//大实心圆点
-                brokeLinePaint.setAlpha(255);
+                paint.setAlpha(100);
+                canvas.drawCircle(points.get(i).x, points.get(i).y, 20, paint);//大实心圆点
+                paint.setAlpha(255);
             } else {
-                canvas.drawCircle(points.get(i).x, points.get(i).y, 10, brokeLinePaint);//实心圆点
+                canvas.drawCircle(points.get(i).x, points.get(i).y, 10, paint);//实心圆点
             }
         }
     }
@@ -294,35 +301,63 @@ public class AirMonthLineView extends View {
      * 绘制两点之间的贝塞尔曲线
      */
     private void drawBezier(Canvas canvas) {
-        brokeLinePaint.setShader(getLinearGradient());
-        brokeLinePaint.setStyle(Paint.Style.STROKE);
         path.reset();
         for (int i = 0; i < points.size(); i++) {
+            path.reset();
             if (i == 0) {// 第一条为二阶贝塞尔
                 path.moveTo(points.get(i).x, points.get(i).y);// 起点
                 path.quadTo(controlPoints.get(i).x, controlPoints.get(i).y,// 控制点
                     points.get(i + 1).x, points.get(i + 1).y);
+                canvas.drawPath(path, getBrokeLinePaint(i));
             } else if (i < points.size() - 2) {// 三阶贝塞尔
+                path.moveTo(points.get(i).x, points.get(i).y);
                 path.cubicTo(controlPoints.get(2 * i - 1).x, controlPoints.get(2 * i - 1).y,// 控制点
                     controlPoints.get(2 * i).x, controlPoints.get(2 * i).y,// 控制点
                     points.get(i + 1).x, points.get(i + 1).y);// 终点
+                canvas.drawPath(path, getBrokeLinePaint(i));
             } else if (i == points.size() - 2) {// 最后一条为二阶贝塞尔
                 path.moveTo(points.get(i).x, points.get(i).y);// 起点
                 path.quadTo(controlPoints.get(controlPoints.size() - 1).x, controlPoints.get(controlPoints.size() -
                     1).y, points.get(i + 1).x, points.get(i + 1).y);// 终点
+                canvas.drawPath(path, getBrokeLinePaint(i));
             }
         }
-        canvas.drawPath(path, brokeLinePaint);
     }
 
-    private LinearGradient getLinearGradient() {
-        int sc = ColorEvaluator.evaluate(datas.get(0).getAirNum() / (float) 500,
-            "#8AD00E", "#FF0000");
-        int ec = ColorEvaluator.evaluate(datas.get(datas.size() - 1).getAirNum() / (float) 500,
-            "#8AD00E", "#FF0000");
-        return new LinearGradient(points.get(0).x, points.get(0).y, points.get(points.size() - 1).x, points.get
-            (points.size() - 1).y, sc, ec, Shader.TileMode.CLAMP);
+
+    private Paint getBrokeLinePaint(int index) {
+        Paint paint = new Paint();
+        paint.setStrokeWidth(2);
+        paint.setAntiAlias(true);
+        paint.setStyle(Paint.Style.STROKE);
+        paint.setShader(getLinearGradient(index));
+        return paint;
     }
+
+    private Paint getPointPaint(int index) {
+        Paint paint = new Paint();
+        paint.setStrokeWidth(2);
+        paint.setAntiAlias(true);
+        paint.setStyle(Paint.Style.FILL);
+        paint.setColor(getCurrentColor(index));
+        return paint;
+    }
+
+    private LinearGradient getLinearGradient(int index) {
+        if (index < datas.size() - 1) {
+            return new LinearGradient(points.get(index).x, points.get(index).y,//渐变起始点坐标
+                points.get(index + 1).x, points.get(index + 1).y,//渐变终点坐标
+                getCurrentColor(index), getCurrentColor(index + 1),//渐变开始和结束颜色
+                Shader.TileMode.REPEAT);
+        }
+        return null;
+    }
+
+    private int getCurrentColor(int index) {
+        float fraction = datas.get(index).getAirNum() / (float) 500;
+        return ColorEvaluator.evaluate(fraction, "#8AD00E", "#FF0000");
+    }
+
 
     private String getDesText(int data) {
         if (data >= 0 && data < 25) {
