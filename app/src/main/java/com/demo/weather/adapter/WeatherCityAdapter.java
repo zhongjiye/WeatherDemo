@@ -111,7 +111,8 @@ public class WeatherCityAdapter extends BaseAdapter {
             } else {
                 myViewHolder.defaultCityTxt.setVisibility(View.GONE);
             }
-            myViewHolder.cityTxt.setText(TextUtils.isEmpty(weatherCity.getCity()) ? "" : weatherCity.getCity());
+            myViewHolder.cityTxt.setText(TextUtils.isEmpty(weatherCity.getZhongwen()) ? "" : weatherCity
+                .getZhongwen());
             Weather weather = weatherCity.getWeather();
             if (weather != null) {
                 myViewHolder.weatherDescTxt.setText(TextUtils.isEmpty(weather.getWeatherDesc())

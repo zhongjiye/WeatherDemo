@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.demo.weather.R;
 import com.demo.weather.activity.AddCityActivity;
 import com.demo.weather.activity.MainActivity;
+import com.demo.weather.adapter.HeaderTitleAdapter;
 import com.demo.weather.adapter.ViewPagerAdapter;
 import com.demo.weather.bean.WeatherCity;
 import com.demo.weather.util.SharedPreferencesUtils;
@@ -22,11 +23,11 @@ import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Gallery;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,8 +36,8 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
 
-import static com.demo.weather.activity.LaunchActivity.WEATHER_CITY_LIST_TAG;
 import static com.demo.weather.config.BroadCastReceiverConfig.UPDATE_CITYLIST;
+import static com.demo.weather.config.SharePreferenceConfig.WEATHER_CITY_LIST_TAG;
 
 /**
  * 天气主界面
@@ -53,28 +54,11 @@ public class WeatherFragment extends Fragment implements WeatherDetailFragment
     ImageView mIvAddCity;
     @InjectView(R.id.iv_search_city)
     ImageView mIvSearchCity;
-    @InjectView(R.id.iv_center_locate)
-    ImageView mIvCenterLocate;
-    @InjectView(R.id.tv_center_location_district)
-    TextView mTvCenterLocationDistrict;
-    @InjectView(R.id.ll_center)
-    LinearLayout mLlCenter;
-    @InjectView(R.id.iv_left_locate)
-    ImageView mIvLeftLocate;
-    @InjectView(R.id.tv_left_location_district)
-    TextView mTvLeftLocationDistrict;
-    @InjectView(R.id.ll_left)
-    LinearLayout mLlLeft;
-    @InjectView(R.id.iv_right_locate)
-    ImageView mIvRightLocate;
-    @InjectView(R.id.tv_right_location_district)
-    TextView mTvRightLocationDistrict;
-    @InjectView(R.id.ll_right)
-    LinearLayout mLlRight;
-    @InjectView(R.id.ll_point)
-    LinearLayout mLlPoint;
     @InjectView(R.id.magic_indicator)
     MagicIndicator mMagicIndicator;
+    @InjectView(R.id.gallery)
+    Gallery mGallery;
+
 
     public interface WeatherMessage {
         /**
@@ -92,9 +76,10 @@ public class WeatherFragment extends Fragment implements WeatherDetailFragment
     private WeatherMessage weatherMessage;
     private List<WeatherCity> weatherCityList;
 
-    private int lastIndex = -1;
 
     private MyReceiver myReceiver;
+    private int lastIndex = 0;
+    private HeaderTitleAdapter headerTitleAdapter;
 
     public WeatherFragment() {
 
@@ -129,7 +114,7 @@ public class WeatherFragment extends Fragment implements WeatherDetailFragment
             }
         }
         for (WeatherCity temp : weatherCityList) {
-            fragmentList.add(WeatherDetailFragment.newInstance(this, temp.getCity(), temp.isLocate()));
+            fragmentList.add(WeatherDetailFragment.newInstance(this, temp.getZhongwen(), temp.isLocate()));
         }
 
         adapter = new ViewPagerAdapter(getChildFragmentManager(), fragmentList);
@@ -142,6 +127,18 @@ public class WeatherFragment extends Fragment implements WeatherDetailFragment
     }
 
     private void initGuide() {
+        headerTitleAdapter = new HeaderTitleAdapter(getContext(), weatherCityList);
+        mGallery.setAdapter(headerTitleAdapter);
+        mGallery.setSpacing(15);
+        mGallery.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (event.getAction() == MotionEvent.ACTION_MOVE) {
+                    return true;
+                }
+                return false;
+            }
+        });
         CircleNavigator circleNavigator = new CircleNavigator(getContext());
         circleNavigator.setCircleCount(fragmentList.size());
         circleNavigator.setCircleColor(Color.WHITE);
@@ -149,140 +146,32 @@ public class WeatherFragment extends Fragment implements WeatherDetailFragment
         ViewPagerHelper.bind(mMagicIndicator, mVpMain);
 
         adapter.notifyDataSetChanged();
-
-        lastIndex = 0;
-        if (fragmentList.size() == 1) {
-            setData(1, 0);
-            mLlCenter.setVisibility(View.VISIBLE);
-            mLlLeft.setVisibility(View.INVISIBLE);
-            mLlRight.setVisibility(View.INVISIBLE);
-        } else if (fragmentList.size() > 1) {
-            setData(1, 0);
-            setData(2, 1);
-            mLlLeft.setVisibility(View.INVISIBLE);
-            mLlCenter.setVisibility(View.VISIBLE);
-            mLlRight.setVisibility(View.VISIBLE);
-        }
     }
+
 
     @Override
     public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
     }
 
+    @Override
+    public void onPageScrollStateChanged(int state) {
+    }
 
     @Override
     public void onPageSelected(int position) {
         if (position < 0 || position > fragmentList.size() - 1 || index == position) {
             return;
         }
+        mGallery.setSelection(position, true);
+        headerTitleAdapter.setSelectItem(position);
         index = position;
-        if (fragmentList.size() == 2) {
-            if (index - lastIndex > 0) {
-                setData(0, 0);
-                setData(1, 1);
-                mLlLeft.setVisibility(View.VISIBLE);
-                mLlRight.setVisibility(View.GONE);
-            } else {
-                setData(1, 0);
-                setData(2, 1);
-                mLlRight.setVisibility(View.VISIBLE);
-                mLlLeft.setVisibility(View.GONE);
-            }
-        } else if (fragmentList.size() > 2) {
-            if (index - lastIndex > 0) {
-                if (index != fragmentList.size() - 1) {
-                    mLlLeft.setVisibility(View.VISIBLE);
-                    mLlRight.setVisibility(View.VISIBLE);
-                    mLlCenter.setVisibility(View.VISIBLE);
-                    setData(0, index - 1);
-                    setData(1, index);
-                    setData(2, index + 1);
-                } else {
-                    mLlLeft.setVisibility(View.VISIBLE);
-                    mLlRight.setVisibility(View.INVISIBLE);
-                    mLlCenter.setVisibility(View.VISIBLE);
-                    setData(0, index - 1);
-                    setData(1, index);
-                }
-            } else {
-                if (index != 0) {
-                    mLlLeft.setVisibility(View.VISIBLE);
-                    mLlRight.setVisibility(View.VISIBLE);
-                    mLlCenter.setVisibility(View.VISIBLE);
-                    setData(0, index - 1);
-                    setData(1, index);
-                    setData(2, index + 1);
-                } else {
-                    mLlLeft.setVisibility(View.INVISIBLE);
-                    mLlRight.setVisibility(View.VISIBLE);
-                    mLlCenter.setVisibility(View.VISIBLE);
-                    setData(1, index);
-                    setData(2, index + 1);
-                }
-            }
-        }
-        lastIndex = index;
-
     }
 
-    @Override
-    public void onPageScrollStateChanged(int state) {
-
-    }
-
-    private void setData(int tab, int index) {
-        switch (tab) {
-            case 0:
-                mTvLeftLocationDistrict.setText(fragmentList.get(index).getLocation());
-                if (fragmentList.get(index).getDefault()) {
-                    mIvLeftLocate.setVisibility(View.VISIBLE);
-                } else {
-                    mIvLeftLocate.setVisibility(View.GONE);
-                }
-                break;
-            case 1:
-                mTvCenterLocationDistrict.setText(fragmentList.get(index).getLocation());
-                if (fragmentList.get(index).getDefault()) {
-                    mIvCenterLocate.setVisibility(View.VISIBLE);
-                } else {
-                    mIvCenterLocate.setVisibility(View.GONE);
-                }
-                break;
-            case 2:
-                mTvRightLocationDistrict.setText(fragmentList.get(index).getLocation());
-                if (fragmentList.get(index).getDefault()) {
-                    mIvRightLocate.setVisibility(View.VISIBLE);
-                } else {
-                    mIvRightLocate.setVisibility(View.GONE);
-                }
-                break;
-        }
-    }
 
     public void selectPage(int index) {
         mVpMain.setCurrentItem(index);
     }
 
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (getContext() instanceof WeatherMessage) {
-            this.weatherMessage = (WeatherMessage) getContext();
-        }
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        getContext().unregisterReceiver(myReceiver);
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        ButterKnife.reset(this);
-    }
 
     @Override
     public void setDistrict(String text) {
@@ -327,7 +216,7 @@ public class WeatherFragment extends Fragment implements WeatherDetailFragment
                             for (WeatherCity temp : weatherCityList) {
                                 fragmentList.add(WeatherDetailFragment.newInstance
                                     (WeatherFragment.this, temp
-                                        .getCity(), temp.isLocate()));
+                                        .getZhongwen(), temp.isLocate()));
                             }
                             adapter.notifyDataSetChanged();
                             initGuide();
@@ -336,5 +225,19 @@ public class WeatherFragment extends Fragment implements WeatherDetailFragment
                     break;
             }
         }
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (getContext() instanceof WeatherMessage) {
+            this.weatherMessage = (WeatherMessage) getContext();
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        getContext().unregisterReceiver(myReceiver);
     }
 }

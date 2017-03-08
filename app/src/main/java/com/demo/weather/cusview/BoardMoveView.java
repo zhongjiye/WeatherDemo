@@ -17,7 +17,7 @@ import com.demo.weather.util.WeatherUtil;
 /**
  * 空气污染指数控件
  */
-public class BoardMoceView extends View {
+public class BoardMoveView extends View {
 
     private Context mContext;
 
@@ -41,10 +41,7 @@ public class BoardMoceView extends View {
 
     private long flushTime = 20;//绘制刷新间隔
 
-    private String startColor = "#8AD00E", endColor = "#FF0000";
-
     private String[] numberTexts = {"0", "50", "100", "150", "200", "300", "500"};
-    private String[] desBottomTexts = new String[7];
 
     private int now = 0;
 
@@ -58,18 +55,20 @@ public class BoardMoceView extends View {
 
     private float padding;
 
+    private int startColor, endColor;
 
-    public BoardMoceView(Context context) {
+
+    public BoardMoveView(Context context) {
         super(context);
         init(context);
     }
 
-    public BoardMoceView(Context context, AttributeSet attrs) {
+    public BoardMoveView(Context context, AttributeSet attrs) {
         super(context, attrs);
         init(context);
     }
 
-    public BoardMoceView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public BoardMoveView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init(context);
     }
@@ -78,6 +77,13 @@ public class BoardMoceView extends View {
     public void setData(final int data) {
         this.data = data;
         dataCount = -1;
+        if (data < 150) {
+            flushTime = 20;
+        } else if (data < 300) {
+            flushTime = 10;
+        } else {
+            flushTime = 5;
+        }
         invalidate();
     }
 
@@ -95,13 +101,9 @@ public class BoardMoceView extends View {
         padding = (outerR - innerR - lineDistance) / 2;
         perDegree = (float) 270 / count;
 
-        desBottomTexts[0] = mContext.getString(R.string.level_desc1);
-        desBottomTexts[1] = mContext.getString(R.string.level_desc2);
-        desBottomTexts[2] = mContext.getString(R.string.level_desc3);
-        desBottomTexts[3] = mContext.getString(R.string.level_desc4);
-        desBottomTexts[4] = mContext.getString(R.string.level_desc5);
-        desBottomTexts[5] = mContext.getString(R.string.level_desc6);
-        desBottomTexts[6] = mContext.getString(R.string.level_desc7);
+
+        startColor = context.getResources().getColor(R.color.colorAirLevel1);
+        endColor = context.getResources().getColor(R.color.colorAirLevel7);
 
         if (linePaint1 == null) {
             linePaint1 = new Paint();
@@ -196,8 +198,6 @@ public class BoardMoceView extends View {
 
     /**
      * 绘制中间刻度的底色
-     *
-     * @param canvas
      */
     private void drawLine(Canvas canvas) {
         canvas.rotate(-45);
@@ -212,8 +212,6 @@ public class BoardMoceView extends View {
 
     /**
      * 绘制最里面的刻度
-     *
-     * @param canvas
      */
     private void drawInnerLine(Canvas canvas) {
         for (int i = 0; i <= count; i = i + 10) {
@@ -225,8 +223,6 @@ public class BoardMoceView extends View {
 
     /**
      * 绘制中间的渐变色刻度
-     *
-     * @param canvas
      */
     private void drawColorLine(Canvas canvas) {
         float counts = 0;
@@ -234,7 +230,7 @@ public class BoardMoceView extends View {
         float progress = ((float) now / data) * (getDataCount() * perDegree);
 
         for (float degreeCount = 0; degreeCount <= progress; degreeCount = degreeCount + perDegree) {
-            colorLinePaint.setColor(ColorEvaluator.evaluate(degreeCount / 270, startColor, endColor));
+            colorLinePaint.setColor(getColor(degreeCount / (float) 270));
             canvas.drawLine(-innerR - padding, 0, -outerR + padding, 0, colorLinePaint);
             canvas.rotate(perDegree);
             counts = degreeCount;
@@ -243,10 +239,13 @@ public class BoardMoceView extends View {
         canvas.rotate(-counts + 45 - perDegree);
     }
 
+    private int getColor(float fraction) {
+        return ColorEvaluator.evaluate(fraction, startColor, endColor);
+    }
+
+
     /**
      * 绘制表盘外的刻度标识
-     *
-     * @param canvas
      */
     private void drawOuterText(Canvas canvas) {
         if (edge == -1) {
@@ -278,16 +277,15 @@ public class BoardMoceView extends View {
 
     /**
      * 绘制中间的数字和描述文字
-     *
-     * @param canvas
      */
     private void drawText(final Canvas canvas) {
         desPaint.setTextSize(180);
         canvas.drawText(String.valueOf(now), 0, 0, desPaint);
         desPaint.setTextSize(60);
-        canvas.drawText(mContext.getString(R.string.air) + WeatherUtil.getDes(mContext, data), 0, 70, desPaint);
+        canvas.drawText(mContext.getString(R.string.air) + WeatherUtil.getDes(mContext, data, 0),
+            0, 70, desPaint);
         desPaint.setTextSize(50);
-        canvas.drawText(getBottomDes(), 0, outerR + 35, desPaint);
+        canvas.drawText(WeatherUtil.getDes(mContext, data, 1), 0, outerR + 35, desPaint);
         postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -307,8 +305,6 @@ public class BoardMoceView extends View {
 
     /**
      * 计算需要重新绘制颜色的刻度数量
-     *
-     * @return
      */
     private int getDataCount() {
         if (dataCount != -1) {
@@ -323,31 +319,4 @@ public class BoardMoceView extends View {
         }
     }
 
-    /**
-     * 获取对应空气指数的描述文字
-     *
-     * @return
-     */
-    private String getBottomDes() {
-        if (data >= 0 && data < 25) {
-            return desBottomTexts[0];
-        } else if (data >= 25 && data < 75) {
-            return desBottomTexts[1];
-        } else if (data >= 75 && data < 125) {
-            return desBottomTexts[2];
-        } else if (data >= 125 & data < 175) {
-            return desBottomTexts[3];
-        } else if (data >= 175 && data < 250) {
-            return desBottomTexts[4];
-        } else if (data >= 250 && data < 400) {
-            return desBottomTexts[5];
-        } else if (data >= 400 && data <= 500) {
-            return desBottomTexts[6];
-        } else {
-            return mContext.getString(R.string.unknown);
-        }
-    }
-
-
 }
-

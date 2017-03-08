@@ -46,10 +46,10 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
 
-import static com.demo.weather.activity.LaunchActivity.WEATHER_CITY_LIST_TAG;
 import static com.demo.weather.bean.WeatherDateType.TODAY;
 import static com.demo.weather.bean.WeatherDateType.TOMORROW;
 import static com.demo.weather.config.BroadCastReceiverConfig.UPDATE_CITYLIST;
+import static com.demo.weather.config.SharePreferenceConfig.WEATHER_CITY_LIST_TAG;
 
 /**
  * 主界面

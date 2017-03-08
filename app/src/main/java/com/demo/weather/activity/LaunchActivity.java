@@ -2,26 +2,24 @@ package com.demo.weather.activity;
 
 import android.content.Intent;
 import android.os.Handler;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
 
 import com.alibaba.fastjson.JSON;
 import com.demo.weather.R;
 import com.demo.weather.base.BaseActivity;
-import com.demo.weather.bean.Weather;
 import com.demo.weather.bean.WeatherCity;
 import com.demo.weather.util.SharedPreferencesUtils;
 
-import java.util.ArrayList;
 import java.util.List;
+
+import static com.demo.weather.config.SharePreferenceConfig.WEATHER_CITY_LIST_TAG;
 
 /**
  * 启动页
  */
 public class LaunchActivity extends BaseActivity {
 
-    public static final String WEATHER_CITY_LIST_TAG = "weather_city_list";
 
     private Handler handler = new Handler();
 
@@ -48,5 +46,6 @@ public class LaunchActivity extends BaseActivity {
             }
         }, 500);
     }
+
 
 }

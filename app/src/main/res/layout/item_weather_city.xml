@@ -71,7 +71,7 @@
             android:id="@+id/tv_weather_range"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="阴转多云"
+            android:text="2~15℃"
             android:textColor="@android:color/white"
             android:textSize="14sp"/>
     </LinearLayout>

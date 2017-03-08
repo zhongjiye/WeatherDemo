@@ -13,6 +13,7 @@ import com.demo.weather.R;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
@@ -162,6 +163,7 @@ public class XListView extends ListView implements OnScrollListener {
      * stop refresh, reset header view.
      */
     public void stopRefresh() {
+        Log.d("xlistview","mPullRefreshing:"+mPullRefreshing);
         if (mPullRefreshing == true) {
             mPullRefreshing = false;
             resetHeaderHeight();

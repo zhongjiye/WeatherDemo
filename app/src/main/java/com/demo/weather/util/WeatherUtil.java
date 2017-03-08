@@ -73,21 +73,28 @@ public class WeatherUtil {
         return 0;
     }
 
-    public static String getDes(Context context, int airNum) {
-        if (airNum >= 0 && airNum < 25) {
-            return context.getString(R.string.level_1);
-        } else if (airNum >= 25 && airNum < 75) {
-            return context.getString(R.string.level_2);
-        } else if (airNum >= 75 && airNum < 125) {
-            return context.getString(R.string.level_3);
-        } else if (airNum >= 125 & airNum < 175) {
-            return context.getString(R.string.level_4);
-        } else if (airNum >= 175 && airNum < 250) {
-            return context.getString(R.string.level_5);
-        } else if (airNum >= 250 && airNum < 400) {
-            return context.getString(R.string.level_6);
-        } else if (airNum >= 400 && airNum <= 500) {
-            return context.getString(R.string.level_7);
+    public static String getDes(Context context, int data, int type) {
+        if (data >= 0 && data < 50) {
+            return type == 0 ? context.getString(R.string.level_1) : context.getString(R.string
+                .level_desc1);
+        } else if (data >= 50 && data < 100) {
+            return type == 0 ? context.getString(R.string.level_2) : context.getString(R.string
+                .level_desc2);
+        } else if (data >= 100 && data < 150) {
+            return type == 0 ? context.getString(R.string.level_3) : context.getString(R.string
+                .level_desc3);
+        } else if (data >= 150 & data < 200) {
+            return type == 0 ? context.getString(R.string.level_4) : context.getString(R.string
+                .level_desc4);
+        } else if (data >= 200 && data < 300) {
+            return type == 0 ? context.getString(R.string.level_5) : context.getString(R.string
+                .level_desc5);
+        } else if (data >= 300 && data < 500) {
+            return type == 0 ? context.getString(R.string.level_6) : context.getString(R.string
+                .level_desc6);
+        } else if (data >= 400) {
+            return type == 0 ? context.getString(R.string.level_7) : context.getString(R.string
+                .level_desc7);
         } else {
             return context.getString(R.string.unknown);
         }

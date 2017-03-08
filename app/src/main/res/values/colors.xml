@@ -14,5 +14,6 @@
     <color name="colorAirLevel4">#F4623C</color>
     <color name="colorAirLevel5">#D52795</color>
     <color name="colorAirLevel6">#A0117F</color>
+    <color name="colorAirLevel7">#4E0018</color>
     <color name="colorAddCity">#676767</color>
 </resources>

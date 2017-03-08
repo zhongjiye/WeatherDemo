@@ -8,6 +8,7 @@ import android.graphics.LinearGradient;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Shader;
+import android.graphics.drawable.GradientDrawable;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.view.Gravity;
@@ -23,6 +24,7 @@ import com.demo.weather.bean.DaysAir;
 import com.demo.weather.bean.MonthAir;
 import com.demo.weather.util.DateUtil;
 import com.demo.weather.util.DensityUtil;
+import com.demo.weather.util.WeatherUtil;
 
 import java.util.ArrayList;
 
@@ -65,7 +67,7 @@ public class MyAirDaysLineView extends HorizontalScrollView {
         desTextView.setLayoutParams(new RelativeLayout.LayoutParams(DensityUtil.dip2px(context, 50), DensityUtil
             .dip2px(context, 20)));
         desTextView.setGravity(Gravity.CENTER);
-        desTextView.setBackgroundResource(R.drawable.button_bg);
+        desTextView.setBackgroundResource(R.drawable.air_num_bg);
         desTextView.setTextSize(10);
         desTextView.setTextColor(Color.WHITE);
 
@@ -91,25 +93,13 @@ public class MyAirDaysLineView extends HorizontalScrollView {
         float maxScroll = (airDaysLineView.getWidth() - airDaysLineView.getExtra() - desTextView.getWidth());
         int x = (int) (scrollX * (maxScroll / max));
         int[] nums = airDaysLineView.getTextHeight(x);
-        desTextView.setBackgroundResource(getBgResId(nums[1]));
-        desTextView.setText(nums[1] + " " + airDaysLineView.getDesText(nums[1]));
-        desTextView.layout(x + desTextView.getWidth() / 2, nums[0] - desTextView.getHeight() - 10, (int) (x +
-            desTextView.getWidth() * 1.5), nums[0] - 10);
-    }
-
-    private int getBgResId(int data) {
-        if (data >= 0 && data < 25) {
-            return R.drawable.air_level1_bg;
-        } else if (data >= 25 && data < 75) {
-            return R.drawable.air_level2_bg;
-        } else if (data >= 75 && data < 125) {
-            return R.drawable.air_level3_bg;
-        } else if (data >= 125 & data < 175) {
-            return R.drawable.air_level4_bg;
-        } else if (data >= 175 && data < 250) {
-            return R.drawable.air_level5_bg;
-        }
-        return R.drawable.air_level6_bg;
+        GradientDrawable myGrad = (GradientDrawable) desTextView.getBackground();
+        myGrad.setColor(airDaysLineView.getColor(nums[1]));
+        desTextView.setText(nums[1] + " " + WeatherUtil.getDes(context, nums[1], 0));
+        desTextView.layout(x + desTextView.getWidth() / 2,
+            nums[0] - desTextView.getHeight() - 15,//
+            (int) (x + desTextView.getWidth() * 1.5),//
+            nums[0] - 15);
     }
 
 

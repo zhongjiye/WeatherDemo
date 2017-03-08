@@ -103,9 +103,10 @@ public class WeatherDetailFragment extends Fragment implements XListView.IXListV
                     getWeatherListData();
                     getWeatherData();
                     setAdvert(0);
+                    Log.d("WeatherDetail", "location:" + location + "停止刷新");
                     mListview.stopRefresh();
-                    mListview.setPullLoadEnable(true);
                     weatherAdapter.notifyDataSetChanged();
+                    mListview.setPullLoadEnable(true);
                     break;
                 case 2:
                     setAdvert(1);
@@ -316,7 +317,6 @@ public class WeatherDetailFragment extends Fragment implements XListView.IXListV
         if (null != rootView) {
             ((ViewGroup) rootView.getParent()).removeView(rootView);
         }
-        ButterKnife.reset(this);
     }
 
 

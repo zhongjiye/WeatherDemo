@@ -16,6 +16,7 @@ import android.view.WindowManager;
 
 import com.demo.weather.R;
 import com.demo.weather.util.ColorEvaluator;
+import com.demo.weather.util.WeatherUtil;
 
 /**
  * 空气污染指数控件
@@ -40,16 +41,15 @@ public class BoardView extends View {
 
     private float screenWidth;//屏幕宽度
 
-    private String startColor, endColor;
 
     private String[] numberTexts = {"0", "50", "100", "150", "200", "300", "500"};
 
-    private String[] desCentreTexts = new String[7];
-    private String[] desBottomTexts = new String[7];
 
     private int data = 0;
 
     private float edge = -1;
+
+    private int startColor, endColor;
 
 
     public BoardView(Context context) {
@@ -77,23 +77,8 @@ public class BoardView extends View {
     private void init(Context context) {
         this.context = context;
 
-        desCentreTexts[0] = context.getString(R.string.level_1);
-        desCentreTexts[1] = context.getString(R.string.level_2);
-        desCentreTexts[2] = context.getString(R.string.level_3);
-        desCentreTexts[3] = context.getString(R.string.level_4);
-        desCentreTexts[4] = context.getString(R.string.level_5);
-        desCentreTexts[5] = context.getString(R.string.level_6);
-        desCentreTexts[6] = context.getString(R.string.level_7);
-
-
-        desBottomTexts[0] = context.getString(R.string.level_desc1);
-        desBottomTexts[1] = context.getString(R.string.level_desc2);
-        desBottomTexts[2] = context.getString(R.string.level_desc3);
-        desBottomTexts[3] = context.getString(R.string.level_desc4);
-        desBottomTexts[4] = context.getString(R.string.level_desc5);
-        desBottomTexts[5] = context.getString(R.string.level_desc6);
-        desBottomTexts[6] = context.getString(R.string.level_desc7);
-
+        startColor = context.getResources().getColor(R.color.colorAirLevel1);
+        endColor = context.getResources().getColor(R.color.colorAirLevel7);
 
         sweepAngle = 360 - shortageAngle;
         startAngle = 90 + shortageAngle / 2;
@@ -101,9 +86,6 @@ public class BoardView extends View {
         WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         screenWidth = wm.getDefaultDisplay().getWidth();
         radius = (screenWidth - 650) / 2;
-
-        startColor = "#8AD00E";
-        endColor = "#FF0000";
 
         if (linePaint == null) {
             linePaint = new Paint();
@@ -187,8 +169,6 @@ public class BoardView extends View {
 
     /**
      * 绘制最里面的刻度
-     *
-     * @param canvas
      */
     private void drawInnerLine(Canvas canvas) {
         canvas.save();
@@ -202,8 +182,6 @@ public class BoardView extends View {
 
     /**
      * 绘制中间的渐变色刻度
-     *
-     * @param canvas
      */
     private void drawColorLine(Canvas canvas) {
         canvas.setDrawFilter(new PaintFlagsDrawFilter(0, Paint.ANTI_ALIAS_FLAG | Paint.FILTER_BITMAP_FLAG));
@@ -217,15 +195,13 @@ public class BoardView extends View {
         outMeasure.getPosTan(length, startPos, null);
         int currentColor = ColorEvaluator.evaluate(getDegree() / 270, startColor, endColor);
         colorLinePaint.setShader(new LinearGradient(startPos[0], startPos[1], endPos[0], endPos[1],
-                Color.parseColor(startColor), currentColor, Shader.TileMode.CLAMP));
+            startColor, currentColor, Shader.TileMode.CLAMP));
         canvas.drawArc(new RectF(-radius, -radius, radius, radius), startAngle + 2, getDegree() - 2, false, colorLinePaint);
     }
 
 
     /**
      * 绘制表盘外的刻度标识
-     *
-     * @param canvas
      */
     private void drawOuterText(Canvas canvas) {
         if (edge == -1) {
@@ -249,43 +225,16 @@ public class BoardView extends View {
 
     /**
      * 绘制中间的数字和描述文字
-     *
-     * @param canvas
      */
     private void drawText(final Canvas canvas) {
         desPaint.setTextSize(150);
         canvas.drawText(String.valueOf(data), 0, 0, desPaint);
         desPaint.setTextSize(40);
-        canvas.drawText(context.getString(R.string.air) + getDesText(), 0, 70, desPaint);
+        canvas.drawText(context.getString(R.string.air) + WeatherUtil.getDes(context, data, 0), 0, 70, desPaint);
         desPaint.setTextSize(50);
-        canvas.drawText(getBottomDes(), 0, radius + 35, desPaint);
+        canvas.drawText(WeatherUtil.getDes(context, data, 1), 0, radius + 35, desPaint);
     }
 
-
-    /**
-     * 获取对应空气指数的描述文字
-     *
-     * @return
-     */
-    private String getDesText() {
-        if (data >= 0 && data < 25) {
-            return desCentreTexts[0];
-        } else if (data >= 25 && data < 75) {
-            return desCentreTexts[1];
-        } else if (data >= 75 && data < 125) {
-            return desCentreTexts[2];
-        } else if (data >= 125 & data < 175) {
-            return desCentreTexts[3];
-        } else if (data >= 175 && data < 250) {
-            return desCentreTexts[4];
-        } else if (data >= 250 && data < 400) {
-            return desCentreTexts[5];
-        } else if (data >= 400 && data <= 500) {
-            return desCentreTexts[6];
-        } else {
-            return context.getString(R.string.unknown);
-        }
-    }
 
     private float getDegree() {
         if (data <= 0) {
@@ -301,31 +250,4 @@ public class BoardView extends View {
         return 270;
     }
 
-    /**
-     * 获取对应空气指数的描述文字
-     *
-     * @return
-     */
-    private String getBottomDes() {
-        if (data >= 0 && data < 25) {
-            return desBottomTexts[0];
-        } else if (data >= 25 && data < 75) {
-            return desBottomTexts[1];
-        } else if (data >= 75 && data < 125) {
-            return desBottomTexts[2];
-        } else if (data >= 125 & data < 175) {
-            return desBottomTexts[3];
-        } else if (data >= 175 && data < 250) {
-            return desBottomTexts[4];
-        } else if (data >= 250 && data < 400) {
-            return desBottomTexts[5];
-        } else if (data >= 400 && data <= 500) {
-            return desBottomTexts[6];
-        } else {
-            return context.getString(R.string.unknown);
-        }
-    }
-
-
 }
-

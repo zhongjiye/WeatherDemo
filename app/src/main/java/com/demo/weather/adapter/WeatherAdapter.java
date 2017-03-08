@@ -47,7 +47,7 @@ public class WeatherAdapter extends BaseAdapter {
         this.context = context;
         this.weathers = weathers;
         this.adverts = adverts;
-        this.clickListener=clickListener;
+        this.clickListener = clickListener;
         inflater = LayoutInflater.from(context);
         imageLoader = ImageLoader.getInstance();
         options = new DisplayImageOptions.Builder()
@@ -344,7 +344,7 @@ public class WeatherAdapter extends BaseAdapter {
         weaherHeaderHolder.airQualityImg.setImageResource(WeatherUtil.getAirPicResId(weather.getAirNum()));
         //设置空气质量级别描述
         weaherHeaderHolder.airQualityDescTxt.setText(WeatherUtil.getDes(context, weather.getAirNum
-            ()));
+            (), 0));
         //设置空气质量指数
         weaherHeaderHolder.airPressureNumTxt.setText(String.valueOf(weather.getAirNum()));
         //设置当前温度

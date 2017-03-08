@@ -16,6 +16,7 @@ import com.demo.weather.R;
 import com.demo.weather.bean.MonthAir;
 import com.demo.weather.util.ColorEvaluator;
 import com.demo.weather.util.DateUtil;
+import com.demo.weather.util.WeatherUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +25,7 @@ import java.util.List;
  * 15天空气指数自定义控件
  */
 public class AirMonthLineView extends View {
+    private Context context;
     private int height;
     private int degree;
     private int count;
@@ -82,6 +84,7 @@ public class AirMonthLineView extends View {
 
 
     private void init(Context context) {
+        this.context = context;
         height = 650;
         degree = 135;
         count = 16;
@@ -92,16 +95,8 @@ public class AirMonthLineView extends View {
         xAxisY = height - paddingBottom;
         perDegree = (float) xLength / 500;
 
-        desCentreTexts[0] = context.getString(R.string.level_1);
-        desCentreTexts[1] = context.getString(R.string.level_2);
-        desCentreTexts[2] = context.getString(R.string.level_3);
-        desCentreTexts[3] = context.getString(R.string.level_4);
-        desCentreTexts[4] = context.getString(R.string.level_5);
-        desCentreTexts[5] = context.getString(R.string.level_6);
-        desCentreTexts[6] = context.getString(R.string.level_7);
-
-        startColor = Color.parseColor("#8AD00E");
-        endColor = Color.parseColor("#FF0000");
+        startColor = context.getResources().getColor(R.color.colorAirLevel1);
+        endColor = context.getResources().getColor(R.color.colorAirLevel7);
 
         path = new Path();
 
@@ -292,7 +287,10 @@ public class AirMonthLineView extends View {
      */
     private void drawPointText(Canvas canvas) {
         for (int i = 0; i < points.size(); i++) {
-            canvas.drawText(getDesText(datas.get(i).getAirNum()), points.get(i).x, points.get(i).y - 30,
+            canvas.drawText(WeatherUtil.getDes(context, datas.get(i).getAirNum(), 0), points.get(i)
+                    .x,
+                points.get(i)
+                    .y - 30,
                 degreeTextPaint);
         }
     }
@@ -354,30 +352,21 @@ public class AirMonthLineView extends View {
     }
 
     private int getCurrentColor(int index) {
-        float fraction = datas.get(index).getAirNum() / (float) 500;
-        return ColorEvaluator.evaluate(fraction, "#8AD00E", "#FF0000");
+        float fraction = getFraction(datas.get(index).getAirNum());
+        return ColorEvaluator.evaluate(fraction, startColor, endColor);
     }
 
-
-    private String getDesText(int data) {
-        if (data >= 0 && data < 25) {
-            return desCentreTexts[0];
-        } else if (data >= 25 && data < 75) {
-            return desCentreTexts[1];
-        } else if (data >= 75 && data < 125) {
-            return desCentreTexts[2];
-        } else if (data >= 125 & data < 175) {
-            return desCentreTexts[3];
-        } else if (data >= 175 && data < 250) {
-            return desCentreTexts[4];
-        } else if (data >= 250 && data < 400) {
-            return desCentreTexts[5];
-        } else if (data >= 400 && data <= 500) {
-            return desCentreTexts[6];
-        } else {
-            return "";
+    private float getFraction(int data) {
+        if (data < 0) {
+            return 0;
+        } else if (data < 200) {
+            return data / (float) 500;
+        } else if (data <= 300) {
+            return 0.4f + ((data - 200) / (float) 100) * 0.2f;
+        } else if (data <= 500) {
+            return 0.6f + ((data - 300) / (float) 200) * 0.4f;
         }
+        return 1.0f;
     }
-
 
 }

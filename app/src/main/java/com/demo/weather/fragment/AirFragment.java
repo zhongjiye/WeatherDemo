@@ -5,7 +5,7 @@ import com.demo.weather.adapter.AirSiteAdapter;
 import com.demo.weather.bean.AirData;
 import com.demo.weather.bean.DaysAir;
 import com.demo.weather.bean.MonthAir;
-import com.demo.weather.cusview.BoardMoceView;
+import com.demo.weather.cusview.BoardMoveView;
 import com.demo.weather.cusview.MyAirDaysLineView;
 import com.demo.weather.cusview.MyAirMonthLineView;
 import com.demo.weather.cusview.MyListView;
@@ -20,7 +20,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -40,7 +39,7 @@ public class AirFragment extends Fragment {
 
 
     @InjectView(R.id.boardView)
-    BoardMoceView boardView;
+    BoardMoveView boardView;
     @InjectView(R.id.tv_location_district)
     TextView tvLocationDistrict;
     @InjectView(R.id.tv_mask)
@@ -118,7 +117,7 @@ public class AirFragment extends Fragment {
         mMsScroll.setBackgroundColor(Color.argb((int) (255 * 0.5f), 37, 97, 118));
         mMsScroll.setHeader(mLlHeader);
         random = new Random();
-        boardView.setData(193);
+        boardView.setData(450);
         initDaysAirData();
         initMonthAirData();
         initAirData();
