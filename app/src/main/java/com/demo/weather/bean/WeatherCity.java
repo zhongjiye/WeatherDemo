@@ -17,6 +17,11 @@ public class WeatherCity implements Parcelable {
     private String id;
     private String quhao;
 
+    private String name;
+    private String english;
+    private String area;
+    private String country;
+
 
     public WeatherCity() {
     }
@@ -93,6 +98,38 @@ public class WeatherCity implements Parcelable {
         this.quhao = quhao;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getEnglish() {
+        return english;
+    }
+
+    public void setEnglish(String english) {
+        this.english = english;
+    }
+
+    public String getArea() {
+        return area;
+    }
+
+    public void setArea(String area) {
+        this.area = area;
+    }
+
+    public String getCountry() {
+        return country;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -108,6 +145,10 @@ public class WeatherCity implements Parcelable {
         dest.writeString(this.py);
         dest.writeString(this.id);
         dest.writeString(this.quhao);
+        dest.writeString(this.name);
+        dest.writeString(this.english);
+        dest.writeString(this.area);
+        dest.writeString(this.country);
     }
 
     protected WeatherCity(Parcel in) {
@@ -119,9 +160,13 @@ public class WeatherCity implements Parcelable {
         this.py = in.readString();
         this.id = in.readString();
         this.quhao = in.readString();
+        this.name = in.readString();
+        this.english = in.readString();
+        this.area = in.readString();
+        this.country = in.readString();
     }
 
-    public static final Parcelable.Creator<WeatherCity> CREATOR = new Parcelable.Creator<WeatherCity>() {
+    public static final Creator<WeatherCity> CREATOR = new Creator<WeatherCity>() {
         @Override
         public WeatherCity createFromParcel(Parcel source) {
             return new WeatherCity(source);

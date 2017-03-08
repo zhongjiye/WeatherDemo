@@ -27,9 +27,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by zhongjy on 2017/2/23.
+ * 侧滑菜单城市列表适配器
  */
-
 public class WeatherCityAdapter extends BaseAdapter {
 
     private List<WeatherCity> dasts;

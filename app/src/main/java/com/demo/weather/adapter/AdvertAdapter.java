@@ -20,10 +20,10 @@ import com.nostra13.universalimageloader.core.imageaware.ImageViewAware;
 
 import java.util.ArrayList;
 
-/**
- * Created by zhongjy on 2017/2/23.
- */
 
+/**
+ * 广告适配器
+ */
 public class AdvertAdapter extends BaseAdapter {
 
     private ArrayList<Advert> list;
@@ -36,14 +36,14 @@ public class AdvertAdapter extends BaseAdapter {
         inflater = LayoutInflater.from(context);
         imageLoader = ImageLoader.getInstance();
         options = new DisplayImageOptions.Builder()
-                .showStubImage(R.mipmap.icon)          // image在加载过程中，显示的图片
-                .showImageForEmptyUri(R.mipmap.icon)  // empty URI时显示的图片
-                .showImageOnFail(R.mipmap.icon)       // 不是图片文件 显示图片
-                .resetViewBeforeLoading(false)  // default
-                .delayBeforeLoading(1000)
-                .cacheInMemory(true)           // default 不缓存至内存
-                .cacheOnDisc(true)             // default 不缓存至手机SDCard
-                .build();
+            .showStubImage(R.mipmap.icon)          // image在加载过程中，显示的图片
+            .showImageForEmptyUri(R.mipmap.icon)  // empty URI时显示的图片
+            .showImageOnFail(R.mipmap.icon)       // 不是图片文件 显示图片
+            .resetViewBeforeLoading(false)  // default
+            .delayBeforeLoading(1000)
+            .cacheInMemory(true)           // default 不缓存至内存
+            .cacheOnDisc(true)             // default 不缓存至手机SDCard
+            .build();
     }
 
 

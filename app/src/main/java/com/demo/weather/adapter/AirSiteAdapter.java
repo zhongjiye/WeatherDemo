@@ -20,9 +20,8 @@ import android.widget.TextView;
 import java.util.List;
 
 /**
- * Created by zhongjy on 2017/2/23.
+ * 空气质量观察站点适配器
  */
-
 public class AirSiteAdapter extends BaseAdapter {
 
     private List<AirData> dasts;

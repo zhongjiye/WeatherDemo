@@ -34,15 +34,58 @@
 
     </RelativeLayout>
 
-    <GridView
-        android:id="@+id/gv_city"
-        android:numColumns="4"
-        android:layout_margin="15dp"
-        android:verticalSpacing="10dp"
-        android:horizontalSpacing="10dp"
+    <ScrollView
+        android:layout_height="wrap_content"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:fillViewport="true"
+        >
 
-    </GridView>
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_marginTop="15dp"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:textSize="16sp"
+                android:gravity="center"
+                android:textColor="#55000000"
+                android:text="选择省份"
+                />
+
+            <com.demo.weather.cusview.MyGridView
+                android:id="@+id/china_city_gridview"
+                android:numColumns="4"
+                android:layout_margin="15dp"
+                android:verticalSpacing="10dp"
+                android:horizontalSpacing="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:textSize="16sp"
+                android:gravity="center"
+                android:textColor="#55000000"
+                android:text="国际城市"
+                />
+
+            <com.demo.weather.cusview.MyGridView
+                android:id="@+id/foreign_city_gridview"
+                android:numColumns="4"
+                android:layout_margin="15dp"
+                android:verticalSpacing="10dp"
+                android:horizontalSpacing="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
+    </ScrollView>
 
 </LinearLayout>

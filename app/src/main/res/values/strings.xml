@@ -40,6 +40,7 @@
     <string name="shrink">收起</string>
     <string name="select_city">选择城市</string>
     <string name="select_area">选择地区</string>
+    <string name="select_country">选择国家</string>
 
     <string name="xlistview_header_hint_normal">下拉刷新…</string>
     <string name="xlistview_header_hint_ready">放开刷新…</string>

@@ -16,6 +16,7 @@ import java.util.Map;
 
 public class CityDataUtil {
     private static Map<String, Map<String, List<WeatherCity>>> mCityMap;
+    private static Map<String, Map<String, List<WeatherCity>>> mForeignCityMap;
 
     public static Map<String, Map<String, List<WeatherCity>>> getCityMap(Context context) {
         if (mCityMap == null || mCityMap.size() == 0) {
@@ -27,5 +28,17 @@ public class CityDataUtil {
             }
         }
         return mCityMap;
+    }
+
+    public static Map<String, Map<String, List<WeatherCity>>> getForeignCityMap(Context context) {
+        if (mForeignCityMap == null || mForeignCityMap.size() == 0) {
+            String datas = AssetsUtil.getAssetFile(context, "internal_citys.json");
+            if (!TextUtils.isEmpty(datas)) {
+                mForeignCityMap = JSON.parseObject(datas,
+                    new TypeReference<Map<String, Map<String, List<WeatherCity>>>>() {
+                    });
+            }
+        }
+        return mForeignCityMap;
     }
 }

@@ -9,9 +9,8 @@ import com.demo.weather.fragment.WeatherDetailFragment;
 import java.util.ArrayList;
 
 /**
- * Created by zhongjy on 2017/2/22.
+ * 天气适配器
  */
-
 public class ViewPagerAdapter extends FragmentPagerAdapter {
     ArrayList<WeatherDetailFragment> list;
 

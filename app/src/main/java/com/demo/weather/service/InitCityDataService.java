@@ -19,5 +19,6 @@ public class InitCityDataService extends IntentService {
     @Override
     protected void onHandleIntent(@Nullable Intent intent) {
         CityDataUtil.getCityMap(getApplicationContext());
+        CityDataUtil.getForeignCityMap(getApplicationContext());
     }
 }
