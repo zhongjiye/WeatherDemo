@@ -194,7 +194,7 @@ public class BoardView extends View {
         outMeasure.getPosTan(0, startPos, null);
         outMeasure.getPosTan(length, startPos, null);
         int currentColor = ColorEvaluator.evaluate(getDegree() / 270, startColor, endColor);
-        colorLinePaint.setShader(new LinearGradient(startPos[0], startPos[1], endPos[0], endPos[1],
+        colorLinePaint.setShader(new LinearGradient(endPos[0], endPos[1], startPos[0], startPos[1],
             startColor, currentColor, Shader.TileMode.CLAMP));
         canvas.drawArc(new RectF(-radius, -radius, radius, radius), startAngle + 2, getDegree() - 2, false, colorLinePaint);
     }

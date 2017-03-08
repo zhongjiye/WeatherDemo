@@ -256,11 +256,9 @@ public class MainActivity extends BaseFragmentActivity implements WeatherFragmen
 
     @Override
     public void delete(int position) {
-//        if (position < weatherCityList.size()) {
         weatherCityList.remove(position);
         weatherCityAdapter.setEditFlag(true);
         weatherCityAdapter.notifyDataSetChanged();
-//        }
     }
 
     @Override
