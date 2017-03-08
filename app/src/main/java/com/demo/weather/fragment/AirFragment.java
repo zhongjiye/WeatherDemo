@@ -117,7 +117,7 @@ public class AirFragment extends Fragment {
         mMsScroll.setBackgroundColor(Color.argb((int) (255 * 0.5f), 37, 97, 118));
         mMsScroll.setHeader(mLlHeader);
         random = new Random();
-        boardView.setData(450);
+        boardView.setData(200);
         initDaysAirData();
         initMonthAirData();
         initAirData();

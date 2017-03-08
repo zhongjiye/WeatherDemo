@@ -274,7 +274,7 @@ public class TodayFragment extends Fragment implements PullToRefreshBase.OnRefre
         //设置空气质量图片
         ivAirQuality.setImageResource(WeatherUtil.getAirPicResId(weather.getAirNum()));
         //设置空气质量级别描述
-        tvAirQualityDesc.setText(WeatherUtil.getDes(getContext(), weather.getAirNum(), 1));
+        tvAirQualityDesc.setText(WeatherUtil.getDes(getContext(), weather.getAirNum(), 0));
         //设置空气质量指数
         tvTvAirQualityNum.setText(String.valueOf(weather.getAirNum()));
 

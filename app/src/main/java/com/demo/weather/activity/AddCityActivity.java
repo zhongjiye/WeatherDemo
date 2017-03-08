@@ -8,6 +8,7 @@ import com.demo.weather.base.BaseActivity;
 import com.demo.weather.bean.WeatherCity;
 import com.demo.weather.util.AppManager;
 import com.demo.weather.util.AssetsUtil;
+import com.demo.weather.util.CityDataUtil;
 import com.demo.weather.util.SharedPreferencesUtils;
 
 import android.content.Intent;
@@ -84,14 +85,9 @@ public class AddCityActivity extends BaseActivity implements AdapterView.OnItemC
         new Thread(new Runnable() {
             @Override
             public void run() {
-                String datas = AssetsUtil.getAssetFile(AddCityActivity.this, "citys.json");
-                if (!TextUtils.isEmpty(datas)) {
-                    mProvinceMap = JSON.parseObject(datas,
-                        new TypeReference<Map<String, Map<String, List<WeatherCity>>>>() {
-                        });
-                    for (String temp : mProvinceMap.keySet()) {
-                        mProvinceList.add(temp);
-                    }
+                mProvinceMap = CityDataUtil.getCityMap(mContext);
+                for (String temp : mProvinceMap.keySet()) {
+                    mProvinceList.add(temp);
                 }
                 handler.sendEmptyMessage(1);
             }

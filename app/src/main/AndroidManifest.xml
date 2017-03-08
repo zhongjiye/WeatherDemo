@@ -60,6 +60,7 @@
             android:name="com.amap.api.v2.apikey"
             android:value="fded94ddb934b7aa434bf10a00cf8fc3"/>
 
+        <service android:name="com.demo.weather.service.InitCityDataService"/>
         <service android:name="com.amap.api.location.APSService"/>
     </application>
 
