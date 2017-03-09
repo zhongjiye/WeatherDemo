@@ -110,8 +110,13 @@ public class WeatherCityAdapter extends BaseAdapter {
             } else {
                 myViewHolder.defaultCityTxt.setVisibility(View.GONE);
             }
-            myViewHolder.cityTxt.setText(TextUtils.isEmpty(weatherCity.getZhongwen()) ? "" : weatherCity
-                .getZhongwen());
+            if (!TextUtils.isEmpty(weatherCity.getZhongwen())) {
+                myViewHolder.cityTxt.setText(weatherCity.getZhongwen());
+            } else if (!TextUtils.isEmpty(weatherCity.getName())) {
+                myViewHolder.cityTxt.setText(weatherCity.getName());
+            } else {
+                myViewHolder.cityTxt.setText("?");
+            }
             Weather weather = weatherCity.getWeather();
             if (weather != null) {
                 myViewHolder.weatherDescTxt.setText(TextUtils.isEmpty(weather.getWeatherDesc())

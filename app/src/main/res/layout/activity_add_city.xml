@@ -2,37 +2,11 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:background="#EBF1F5"
+    android:background="@color/colorAddCityBg"
     android:orientation="vertical"
     android:layout_height="match_parent">
 
-    <RelativeLayout
-        android:background="#3097FD"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <ImageView
-            android:id="@+id/iv_back"
-            android:layout_alignParentLeft="true"
-            android:src="@drawable/back_selcetor"
-            android:scaleType="fitXY"
-            android:layout_marginLeft="15dp"
-            android:layout_marginTop="25dp"
-            android:layout_width="30dp"
-            android:layout_height="30dp"/>
-
-        <TextView
-            android:layout_centerHorizontal="true"
-            android:id="@+id/tv_location_district"
-            android:layout_width="wrap_content"
-            android:layout_height="45dp"
-            android:gravity="center"
-            android:layout_marginTop="20dp"
-            android:text="添加城市"
-            android:textColor="@android:color/white"
-            android:textSize="20sp"/>
-
-    </RelativeLayout>
+    <include layout="@layout/view_header"/>
 
     <ScrollView
         android:layout_height="wrap_content"

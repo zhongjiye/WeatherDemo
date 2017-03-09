@@ -36,6 +36,8 @@ public class SelectCityActivity extends BaseActivity implements AdapterView.OnIt
     TextView mTvProvince;
     @InjectView(R.id.gv_city)
     GridView mGvCity;
+    @InjectView(R.id.tv_title)
+    TextView mTvTitle;
 
     private String mProvince;
     private CityAdapter mCityAdapter;
@@ -48,6 +50,7 @@ public class SelectCityActivity extends BaseActivity implements AdapterView.OnIt
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_select_city);
         ButterKnife.inject(this);
+        mTvTitle.setText(R.string.select_city);
         initData();
         initGridView();
     }

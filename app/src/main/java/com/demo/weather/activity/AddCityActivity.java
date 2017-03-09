@@ -17,8 +17,8 @@ import android.os.Message;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.lang.ref.WeakReference;
@@ -44,6 +44,8 @@ public class AddCityActivity extends BaseActivity {
     MyGridView mChinaCityGridview;
     @InjectView(R.id.foreign_city_gridview)
     MyGridView mForeignCityGridview;
+    @InjectView(R.id.tv_title)
+    TextView mTvTitle;
 
 
     private static class MHandler extends Handler {
@@ -90,6 +92,7 @@ public class AddCityActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_city);
         ButterKnife.inject(this);
+        mTvTitle.setText(R.string.add_city);
         initCityData();
         initGridView();
     }

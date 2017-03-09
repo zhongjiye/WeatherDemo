@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="wrap_content"
+    android:paddingLeft="15dp"
+    android:paddingRight="15dp"
+    android:layout_width="match_parent">
+
+    <TextView
+        android:textSize="16sp"
+        android:layout_marginTop="10dp"
+        android:textColor="@color/colorCountry"
+        android:id="@+id/tv_country_index"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_marginRight="5dp"
+        android:gravity="left|center_vertical"
+        android:text="A"
+        android:layout_width="15dp"
+        />
+
+    <com.demo.weather.cusview.flowlayout.TagFlowLayout
+        android:id="@+id/cus_flowlayout"
+        android:layout_alignParentTop="true"
+        android:layout_toRightOf="@id/tv_country_index"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+</RelativeLayout>
+
+

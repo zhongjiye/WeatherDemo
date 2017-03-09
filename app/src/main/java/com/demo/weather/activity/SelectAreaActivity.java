@@ -40,6 +40,8 @@ public class SelectAreaActivity extends BaseActivity implements AdapterView.OnIt
     TextView mTvCity;
     @InjectView(R.id.gv_area)
     GridView mGvArea;
+    @InjectView(R.id.tv_title)
+    TextView mTvTitle;
 
     private String mCity;
     private CityAdapter mAreaAdapter;
@@ -51,6 +53,7 @@ public class SelectAreaActivity extends BaseActivity implements AdapterView.OnIt
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_select_area);
         ButterKnife.inject(this);
+        mTvTitle.setText(R.string.select_area);
         initData();
         initGridView();
         initWeatherCityList();

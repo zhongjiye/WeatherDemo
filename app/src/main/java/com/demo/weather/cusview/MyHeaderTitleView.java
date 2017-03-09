@@ -10,6 +10,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.support.v7.widget.LinearLayoutCompat;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -66,7 +67,13 @@ public class MyHeaderTitleView extends LinearLayout {
 
     public void setData(WeatherCity weatherCity) {
         if (weatherCity != null) {
-            mTitleTextView.setText(weatherCity.getZhongwen());
+            if (!TextUtils.isEmpty(weatherCity.getZhongwen())) {
+                mTitleTextView.setText(weatherCity.getZhongwen());
+            } else if (!TextUtils.isEmpty(weatherCity.getName())) {
+                mTitleTextView.setText(weatherCity.getName());
+            } else {
+                mTitleTextView.setText("?");
+            }
             if (weatherCity.isLocate()) {
                 mLocateImageView.setVisibility(View.VISIBLE);
             } else {
