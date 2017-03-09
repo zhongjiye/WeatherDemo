@@ -103,7 +103,6 @@ public class WeatherDetailFragment extends Fragment implements XListView.IXListV
                     getWeatherListData();
                     getWeatherData();
                     setAdvert(0);
-                    Log.d("WeatherDetail", "location:" + location + "停止刷新");
                     mListview.stopRefresh();
                     weatherAdapter.notifyDataSetChanged();
                     mListview.setPullLoadEnable(true);

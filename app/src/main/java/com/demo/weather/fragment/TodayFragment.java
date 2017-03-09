@@ -52,7 +52,7 @@ public class TodayFragment extends Fragment implements PullToRefreshBase.OnRefre
     ImageView ivAirQuality;
     @InjectView(R.id.tv_air_quality_desc)
     TextView tvAirQualityDesc;
-    @InjectView(R.id.tv_tv_air_quality_num)
+    @InjectView(R.id.tv_air_quality_num)
     TextView tvTvAirQualityNum;
     @InjectView(R.id.iv_weather)
     ImageView ivWeather;

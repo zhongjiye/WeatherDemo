@@ -5,10 +5,10 @@
     android:layout_width="wrap_content">
 
     <TextView
-        android:textSize="14sp"
+        android:textSize="15sp"
         android:textColor="@color/colorAddCity"
         android:id="@+id/tv_city"
-        android:layout_height="35dp"
+        android:layout_height="30dp"
         android:background="@drawable/add_city_bg"
         android:gravity="center"
         android:layout_width="match_parent"

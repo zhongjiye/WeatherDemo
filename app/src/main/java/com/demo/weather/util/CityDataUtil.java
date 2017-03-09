@@ -9,6 +9,7 @@ import android.text.TextUtils;
 
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * Created by zhongjy on 2017/3/8.
@@ -23,7 +24,7 @@ public class CityDataUtil {
             String datas = AssetsUtil.getAssetFile(context, "citys.json");
             if (!TextUtils.isEmpty(datas)) {
                 mCityMap = JSON.parseObject(datas,
-                    new TypeReference<Map<String, Map<String, List<WeatherCity>>>>() {
+                    new TypeReference<TreeMap<String, Map<String, List<WeatherCity>>>>() {
                     });
             }
         }

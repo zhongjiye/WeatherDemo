@@ -2,7 +2,6 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorWeatherBg"
     android:orientation="vertical">
 
     <View
@@ -43,8 +42,9 @@
                 android:textSize="16sp"/>
 
             <ImageView
-                android:layout_width="12dp"
-                android:layout_height="12dp"
+                android:layout_width="10dp"
+                android:layout_height="10dp"
+                android:layout_marginLeft="3dp"
                 android:layout_marginRight="17dp"
                 android:src="@mipmap/menu_array_normal"/>
 

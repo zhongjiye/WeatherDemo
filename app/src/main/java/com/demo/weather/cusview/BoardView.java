@@ -229,9 +229,8 @@ public class BoardView extends View {
     private void drawText(final Canvas canvas) {
         desPaint.setTextSize(150);
         canvas.drawText(String.valueOf(data), 0, 0, desPaint);
-        desPaint.setTextSize(40);
-        canvas.drawText(context.getString(R.string.air) + WeatherUtil.getDes(context, data, 0), 0, 70, desPaint);
         desPaint.setTextSize(50);
+        canvas.drawText(context.getString(R.string.air) + WeatherUtil.getDes(context, data, 0), 0, 70, desPaint);
         canvas.drawText(WeatherUtil.getDes(context, data, 1), 0, radius + 35, desPaint);
     }
 

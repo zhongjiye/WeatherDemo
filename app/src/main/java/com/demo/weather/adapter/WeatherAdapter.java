@@ -1,6 +1,7 @@
 package com.demo.weather.adapter;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +15,7 @@ import com.demo.weather.R;
 import com.demo.weather.bean.Advert;
 import com.demo.weather.bean.Weather;
 import com.demo.weather.cusview.BoardView;
+import com.demo.weather.util.ColorEvaluator;
 import com.demo.weather.util.DateUtil;
 import com.demo.weather.util.LunarUtil;
 import com.demo.weather.util.WeatherUtil;
@@ -156,6 +158,8 @@ public class WeatherAdapter extends BaseAdapter {
                     convertView = inflater.inflate(R.layout.item_weatherdetail_header, null);
                     weatherHeaderHolder.airPressureNumTxt = (TextView) convertView.findViewById(R.id
                         .tv_air_pressure_num);
+                    weatherHeaderHolder.airQualityNumTxt = (TextView) convertView.findViewById(R.id
+                        .tv_air_quality_num);
                     weatherHeaderHolder.airQualityDescTxt = (TextView) convertView.findViewById(R.id
                         .tv_air_quality_desc);
                     weatherHeaderHolder.airQualityImg = (ImageView) convertView.findViewById(R.id
@@ -273,7 +277,7 @@ public class WeatherAdapter extends BaseAdapter {
     }
 
     private class WeatherHeaderHolder {
-        private TextView weatherDescTxt, airQualityDescTxt, currentTempTxt,
+        private TextView weatherDescTxt, airQualityDescTxt, airQualityNumTxt, currentTempTxt,
             currentWeatherDescTxt, windTxt,
             windLevelTxt, airPressureNumTxt, todayWeatherDetailTxt, tomorrowWeatherDetailTxt;
         private ImageView weaherImg, airQualityImg;
@@ -318,6 +322,14 @@ public class WeatherAdapter extends BaseAdapter {
     }
 
     private void setWeathersListData(WeatherItemHolder weatherItemHolder, Weather weather) {
+        if ("周六".equals(DateUtil.getWeekOfDate(weather.getDate())) || "周日".equals(DateUtil
+            .getWeekOfDate(weather.getDate()))) {
+            weatherItemHolder.dateDesc.setTextColor(Color.parseColor("#FFD11A"));
+            weatherItemHolder.date.setTextColor(Color.parseColor("#99FFD11A"));
+        } else {
+            weatherItemHolder.dateDesc.setTextColor(Color.WHITE);
+            weatherItemHolder.date.setTextColor(Color.parseColor("#99FFFFFF"));
+        }
         weatherItemHolder.dateDesc.setText(DateUtil.getWeekOfDate(weather.getDate()));
         weatherItemHolder.date.setText(DateUtil.getDate(weather.getDate()));
         weatherItemHolder.weatherImg.setImageResource(WeatherUtil.getWeatherResId(weather.getWeatherCode()));
@@ -342,9 +354,12 @@ public class WeatherAdapter extends BaseAdapter {
         setTem(weaherHeaderHolder.temperatureContainerLayout, weather.getTemperatureMax(), 1);
         //设置空气质量图片
         weaherHeaderHolder.airQualityImg.setImageResource(WeatherUtil.getAirPicResId(weather.getAirNum()));
+        //空气质量指数
+        weaherHeaderHolder.airQualityNumTxt.setText(String.valueOf(weather.getAirNum()));
         //设置空气质量级别描述
-        weaherHeaderHolder.airQualityDescTxt.setText(WeatherUtil.getDes(context, weather.getAirNum
-            (), 0));
+        weaherHeaderHolder.airQualityDescTxt.setText("空气" + WeatherUtil.getDes(context, weather
+            .getAirNum
+                (), 0));
         //设置空气质量指数
         weaherHeaderHolder.airPressureNumTxt.setText(String.valueOf(weather.getAirNum()));
         //设置当前温度

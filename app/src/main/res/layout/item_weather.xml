@@ -18,15 +18,15 @@
             android:layout_marginLeft="15dp"
             android:text="今天"
             android:textColor="@android:color/white"
-            android:textSize="16sp" />
+            android:textSize="16sp"/>
 
         <TextView
             android:id="@+id/tv_date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="2/23"
-            android:textColor="@android:color/white"
-            android:textSize="16sp" />
+            android:textColor="#99FFFFFF"
+            android:textSize="16sp"/>
     </LinearLayout>
 
     <LinearLayout
@@ -40,7 +40,8 @@
             android:id="@+id/iv_weather"
             android:layout_width="20dp"
             android:layout_height="20dp"
-            android:src="@mipmap/a_10" />
+            android:layout_marginRight="3dp"
+            android:src="@mipmap/a_10"/>
 
         <TextView
             android:id="@+id/tv_weather_desc"
@@ -48,7 +49,7 @@
             android:layout_height="wrap_content"
             android:text="阴转多云"
             android:textColor="@android:color/white"
-            android:textSize="16sp" />
+            android:textSize="16sp"/>
     </LinearLayout>
 
     <LinearLayout
@@ -64,17 +65,17 @@
             android:layout_height="wrap_content"
             android:text="阴转多云"
             android:textColor="@android:color/white"
-            android:textSize="16sp" />
+            android:textSize="16sp"/>
 
         <ImageView
             android:id="@+id/iv_arrow"
-            android:layout_width="12dp"
-            android:layout_height="12dp"
+            android:layout_width="10dp"
+            android:layout_height="10dp"
+            android:layout_marginLeft="3dp"
             android:layout_marginRight="5dp"
-            android:src="@mipmap/menu_array_normal" />
+            android:src="@mipmap/menu_array_normal"/>
 
     </LinearLayout>
-
 
 </LinearLayout>
 

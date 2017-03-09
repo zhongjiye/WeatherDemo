@@ -23,8 +23,11 @@ import android.widget.Toast;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -64,9 +67,16 @@ public class AddCityActivity extends BaseActivity {
                         for (String temp : activity.mProvinceMap.keySet()) {
                             activity.mProvinceList.add(temp);
                         }
+                        Collections.sort(activity.mProvinceList, new Comparator<String>() {
+                            @Override
+                            public int compare(String o1, String o2) {
+                                return o1.compareTo(o2);
+                            }
+                        });
                         for (String temp : activity.mStateMap.keySet()) {
                             activity.mStateList.add(temp);
                         }
+                        Collections.sort(activity.mStateList);
                         activity.mProvinceAdapter.notifyDataSetChanged();
                         break;
                 }
