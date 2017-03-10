@@ -2,6 +2,7 @@ package net.lucode.hackware.magicindicator.buildins.circlenavigator;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PointF;
 import android.view.MotionEvent;
@@ -50,9 +51,9 @@ public class CircleNavigator extends View implements IPagerNavigator {
 
     private void init(Context context) {
         mTouchSlop = ViewConfiguration.get(context).getScaledTouchSlop();
-        mRadius = UIUtil.dip2px(context, 3);
-        mCircleSpacing = UIUtil.dip2px(context, 8);
-        mStrokeWidth = UIUtil.dip2px(context, 1);
+        mRadius = UIUtil.dip2px(context, 2);
+        mCircleSpacing = UIUtil.dip2px(context, 4);
+        mStrokeWidth = 1;
     }
 
     @Override
@@ -104,8 +105,16 @@ public class CircleNavigator extends View implements IPagerNavigator {
     }
 
     private void drawCircles(Canvas canvas) {
-        mPaint.setStyle(Paint.Style.STROKE);
         mPaint.setStrokeWidth(mStrokeWidth);
+
+        mPaint.setStyle(Paint.Style.STROKE);
+        mPaint.setColor(Color.WHITE);
+        for (int i = 0, j = mCirclePoints.size(); i < j; i++) {
+            PointF pointF = mCirclePoints.get(i);
+            canvas.drawCircle(pointF.x, pointF.y, mRadius, mPaint);
+        }
+        mPaint.setStyle(Paint.Style.FILL);
+        mPaint.setColor(Color.parseColor("#22ffffff"));
         for (int i = 0, j = mCirclePoints.size(); i < j; i++) {
             PointF pointF = mCirclePoints.get(i);
             canvas.drawCircle(pointF.x, pointF.y, mRadius, mPaint);
@@ -114,6 +123,7 @@ public class CircleNavigator extends View implements IPagerNavigator {
 
     private void drawIndicator(Canvas canvas) {
         mPaint.setStyle(Paint.Style.FILL);
+        mPaint.setColor(Color.WHITE);
         if (mCirclePoints.size() > 0) {
             canvas.drawCircle(mIndicatorX, (int) (getHeight() / 2.0f + 0.5f), mRadius, mPaint);
         }

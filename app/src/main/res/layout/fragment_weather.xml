@@ -42,17 +42,34 @@
             android:layout_toLeftOf="@id/iv_add_city"
             android:src="@drawable/search_city_selcetor"/>
 
-        <Gallery
-            android:id="@+id/gallery"
-            android:layout_centerInParent="true"
-            android:layout_width="140dp"
-            android:layout_height="wrap_content"/>
+        <HorizontalScrollView
+            android:orientation="horizontal"
+            android:id="@+id/indicate_scroll"
+            android:layout_width="130dp"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:scrollbars="none"
+            android:layout_marginTop="5dp"
+            android:overScrollMode="never"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:clipChildren="false">
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:id="@+id/ll_title"
+                android:gravity="bottom"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+        </HorizontalScrollView>
 
         <net.lucode.hackware.magicindicator.MagicIndicator
             android:id="@+id/magic_indicator"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/gallery"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="5dp"
+            android:layout_below="@id/indicate_scroll"
             android:layout_centerHorizontal="true"
             android:gravity="center"/>
 

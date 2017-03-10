@@ -53,4 +53,7 @@
     <string name="xlistview_footer_hint_normal">上拉加载更多…</string>
     <string name="xlistview_footer_hint_ready">松开加载更多…</string>
 
+    <item type="id" name="tag_child_index"/>
+    <item type="id" name="tag_position_index"/>
+
 </resources>

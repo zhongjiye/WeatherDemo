@@ -7,12 +7,19 @@ import com.demo.weather.activity.MainActivity;
 import com.demo.weather.adapter.HeaderTitleAdapter;
 import com.demo.weather.adapter.ViewPagerAdapter;
 import com.demo.weather.bean.WeatherCity;
+import com.demo.weather.cusview.TitleTextView;
+import com.demo.weather.cusview.ViewPagerScroller;
+import com.demo.weather.util.DensityUtil;
 import com.demo.weather.util.SharedPreferencesUtils;
+import com.nineoldandroids.animation.Animator;
+import com.nineoldandroids.animation.AnimatorSet;
+import com.nineoldandroids.animation.ObjectAnimator;
 
 import net.lucode.hackware.magicindicator.MagicIndicator;
 import net.lucode.hackware.magicindicator.ViewPagerHelper;
 import net.lucode.hackware.magicindicator.buildins.circlenavigator.CircleNavigator;
 
+import android.animation.ValueAnimator;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -20,14 +27,21 @@ import android.content.IntentFilter;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
+import android.text.TextPaint;
 import android.text.TextUtils;
+import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Gallery;
+import android.view.animation.LinearInterpolator;
+import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,7 +58,7 @@ import static com.demo.weather.config.SharePreferenceConfig.WEATHER_CITY_LIST_TA
  */
 public class WeatherFragment extends Fragment implements WeatherDetailFragment
     .WeatherDetailMessage, ViewPager
-    .OnPageChangeListener {
+    .OnPageChangeListener, View.OnClickListener {
 
     @InjectView(R.id.vp_main)
     ViewPager mVpMain;
@@ -56,8 +70,12 @@ public class WeatherFragment extends Fragment implements WeatherDetailFragment
     ImageView mIvSearchCity;
     @InjectView(R.id.magic_indicator)
     MagicIndicator mMagicIndicator;
-    @InjectView(R.id.gallery)
-    Gallery mGallery;
+    @InjectView(R.id.ll_title)
+    LinearLayout mIndicateLayout;
+    @InjectView(R.id.indicate_scroll)
+    HorizontalScrollView mIndicateScroll;
+
+    private Context mContext;
 
 
     public interface WeatherMessage {
@@ -78,8 +96,8 @@ public class WeatherFragment extends Fragment implements WeatherDetailFragment
 
 
     private MyReceiver myReceiver;
-    private int lastIndex = 0;
-    private HeaderTitleAdapter headerTitleAdapter;
+
+    private List<TitleTextView> mTitleTextViews = new ArrayList<>();
 
     public WeatherFragment() {
 
@@ -101,6 +119,7 @@ public class WeatherFragment extends Fragment implements WeatherDetailFragment
 
 
     private void init() {
+        mContext = getContext();
         myReceiver = new MyReceiver();
         getContext().registerReceiver(myReceiver, new IntentFilter(UPDATE_CITYLIST));
         weatherCityList = new ArrayList<>();
@@ -121,22 +140,19 @@ public class WeatherFragment extends Fragment implements WeatherDetailFragment
         mVpMain.setAdapter(adapter);
         mVpMain.addOnPageChangeListener(this);
         mVpMain.setOffscreenPageLimit(2);
+        ViewPagerScroller mPagerScroller = new ViewPagerScroller(getActivity());
+        mPagerScroller.initViewPagerScroll(mVpMain);
+
 
         initGuide();
 
     }
 
     private void initGuide() {
-        headerTitleAdapter = new HeaderTitleAdapter(getContext(), weatherCityList);
-        mGallery.setAdapter(headerTitleAdapter);
-        mGallery.setSpacing(15);
-        mGallery.setOnTouchListener(new View.OnTouchListener() {
+        mIndicateScroll.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                if (event.getAction() == MotionEvent.ACTION_MOVE) {
-                    return true;
-                }
-                return false;
+                return true;
             }
         });
         CircleNavigator circleNavigator = new CircleNavigator(getContext());
@@ -144,8 +160,24 @@ public class WeatherFragment extends Fragment implements WeatherDetailFragment
         circleNavigator.setCircleColor(Color.WHITE);
         mMagicIndicator.setNavigator(circleNavigator);
         ViewPagerHelper.bind(mMagicIndicator, mVpMain);
-
         adapter.notifyDataSetChanged();
+
+        mTitleTextViews.clear();
+        mIndicateLayout.removeAllViews();
+        for (int i = 0; i < weatherCityList.size(); i++) {
+            TitleTextView titleTextView = new TitleTextView(getContext(), i);
+            titleTextView.setText(weatherCityList.get(i).getZhongwen());
+            titleTextView.setOnClickListener(WeatherFragment.this);
+            if (i > 0) {
+                titleTextView.setTextSize(12);
+                titleTextView.setAlpha(0.7f);
+            } else {
+                titleTextView.setMarginLeft(DensityUtil.dip2px(getContext(), 65) - (int)
+                    getTextSize(16, weatherCityList.get(i).getZhongwen()) / 2);
+            }
+            mTitleTextViews.add(titleTextView);
+            mIndicateLayout.addView(titleTextView);
+        }
     }
 
 
@@ -162,14 +194,16 @@ public class WeatherFragment extends Fragment implements WeatherDetailFragment
         if (position < 0 || position > fragmentList.size() - 1 || index == position) {
             return;
         }
-        mGallery.setSelection(position, true);
-        headerTitleAdapter.setSelectItem(position);
         index = position;
+        if (!clickFlg) {
+            animator(mTitleTextViews.get(index));
+        }
+        clickFlg = false;
     }
 
 
     public void selectPage(int index) {
-        mVpMain.setCurrentItem(index);
+        mVpMain.setCurrentItem(index, true);
     }
 
 
@@ -197,8 +231,90 @@ public class WeatherFragment extends Fragment implements WeatherDetailFragment
                 break;
             case R.id.iv_search_city:
                 break;
+            default:
+                clickFlg = true;
+                animator((TitleTextView) view);
+                break;
         }
     }
+
+
+    private float getTextSize(int textSize, String content) {
+        TextPaint newPaint = new TextPaint();
+        newPaint.setTextSize(getResources().getDisplayMetrics().scaledDensity * textSize);
+        return newPaint.measureText(content);
+    }
+
+    private boolean clickFlg = false;
+
+    private void animator(TitleTextView view) {
+        int postionIndex = view.getPositionIndex();
+        if (postionIndex != 1) {
+            if (clickFlg) {
+                selectPage(view.getChildPositionIndex());
+            }
+            int childIndex = view.getChildPositionIndex();
+
+            float move = 0;
+            if (postionIndex > 1) {//左移
+                move = view.getWidth() / (float) 2
+                    + mTitleTextViews.get(childIndex - 1).getWidth() / (float) 2
+                    + view.getMarginRight() - DensityUtil.sp2px(getContext(), 3f);
+            } else {//右移
+                move = view.getWidth() / (float) 2
+                    + mTitleTextViews.get(childIndex + 1).getWidth() / (float) 2
+                    + view.getMarginRight() - DensityUtil.sp2px(getContext(), 3f);
+            }
+
+            for (int j = 0; j < mTitleTextViews.size(); j++) {
+                AnimatorSet animationSet = new AnimatorSet();
+                animationSet.setInterpolator(new LinearInterpolator());
+                animationSet.setDuration(200);
+                TitleTextView currentView = mTitleTextViews.get(j);
+                currentView.setPivotX(currentView.getWidth() / 2);
+                currentView.setPivotY(currentView.getHeight() / 2);
+                int currentChildIndex = currentView.getChildPositionIndex();
+                int currentPositionIndex = currentView.getPositionIndex();
+
+                animationSet.playTogether(//
+                    getAnimator(currentView, currentChildIndex == childIndex ? ALPHA_LIGHTER :
+                        ALPHA_DARKER, 0),
+                    getAnimator(currentView, postionIndex > 1 ? TRANSLATE_LEFT : TRANSLATE_RIGHT,
+                        move));
+                currentView.setPositionIndex(postionIndex > 1 ? currentPositionIndex - 1 : currentPositionIndex + 1);
+                currentView.setTextSize(currentChildIndex == childIndex ? 16 : 13);
+                animationSet.start();
+            }
+        }
+    }
+
+    private final int TRANSLATE_LEFT = 0;
+    private final int TRANSLATE_RIGHT = 1;
+    private final int ALPHA_LIGHTER = 2;
+    private final int ALPHA_DARKER = 3;
+
+    private Animator getAnimator(View view, int type, float move) {
+        Animator animator = null;
+        switch (type) {
+            case TRANSLATE_LEFT:
+                animator = ObjectAnimator.ofFloat(view, "translationX", view.getTranslationX(),
+                    view.getTranslationX() - move);
+                break;
+            case TRANSLATE_RIGHT:
+                animator = ObjectAnimator.ofFloat(view, "translationX", view.getTranslationX(),
+                    view.getTranslationX() + move);
+                break;
+            case ALPHA_LIGHTER:
+                animator = ObjectAnimator.ofFloat(view, "alpha", 0.7f, 1.0f);
+                break;
+            case ALPHA_DARKER:
+                animator = ObjectAnimator.ofFloat(view, "alpha", 1.0f, 0.7f);
+                break;
+        }
+        return animator;
+    }
+
+    private boolean initFlag = false;
 
     class MyReceiver extends BroadcastReceiver {
         @Override
@@ -219,6 +335,7 @@ public class WeatherFragment extends Fragment implements WeatherDetailFragment
                                         .getZhongwen(), temp.isLocate()));
                             }
                             adapter.notifyDataSetChanged();
+                            initFlag = true;
                             initGuide();
                         }
                     }
